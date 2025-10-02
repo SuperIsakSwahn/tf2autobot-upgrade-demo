@@ -1,0 +1,7 @@
+Copyright (c) 2025 Isak Bobowski Swahn (aka PolishGuy)
+
+This software is a demo version of tf2autobot-upgrade, some features such as the working key rates and steam pricelist have been removed.
+The features that were relatively easy to implement such as fallback prices are still here.
+
+This project includes code from TF2Autobot (https://github.com/TF2Autobot/tf2autobot),
+used under the MIT License. See LICENSE-ORIGINAL for details.
