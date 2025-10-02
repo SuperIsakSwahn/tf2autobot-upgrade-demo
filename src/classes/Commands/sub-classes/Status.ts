@@ -41,17 +41,17 @@ export default class StatusCommands {
 
         const keyPrices = this.bot.pricelist.getKeyPrices;
 
-        const timedProfitmadeFull = Currencies.toPolishCurrencies(profits.profitTimed, keyPrices.sell.metal).toString();
+        const timedProfitmadeFull = Currencies.toCurrencies(profits.profitTimed, keyPrices.sell.metal).toString();
         const timedProfitmadeInRef = timedProfitmadeFull.includes('key')
             ? ` (${Currencies.toRefined(profits.profitTimed)} ref)`
             : '';
 
-        const profitmadeFull = Currencies.toPolishCurrencies(profits.tradeProfit, keyPrices.sell.metal).toString();
+        const profitmadeFull = Currencies.toCurrencies(profits.tradeProfit, keyPrices.sell.metal).toString();
         const profitmadeInRef = profitmadeFull.includes('key')
             ? ` (${Currencies.toRefined(profits.tradeProfit)} ref)`
             : '';
 
-        const profitOverpayFull = Currencies.toPolishCurrencies(profits.overpriceProfit, keyPrices.sell.metal).toString();
+        const profitOverpayFull = Currencies.toCurrencies(profits.overpriceProfit, keyPrices.sell.metal).toString();
         const profitOverpayInRef = profitOverpayFull.includes('key')
             ? ` (${Currencies.toRefined(profits.overpriceProfit)} ref)`
             : '';
@@ -372,11 +372,11 @@ export default class StatusCommands {
 
                 if (this.bot.isAdmin(steamID)) {
                     // Admin only
-                    const boughtValue = Currencies.toPolishCurrencies(totalBoughtValue, keyPrice);
+                    const boughtValue = Currencies.toCurrencies(totalBoughtValue, keyPrice);
                     const boughtValueToString = boughtValue.toString();
-                    const soldValue = Currencies.toPolishCurrencies(totalSoldValue, keyPrice);
+                    const soldValue = Currencies.toCurrencies(totalSoldValue, keyPrice);
                     const soldValueToString = soldValue.toString();
-                    const netProfit = Currencies.toPolishCurrencies(totalSoldValue - totalBoughtValue, keyPrice);
+                    const netProfit = Currencies.toCurrencies(totalSoldValue - totalBoughtValue, keyPrice);
                     const netProfitToString = netProfit.toString();
 
                     adminOnlyMessage =

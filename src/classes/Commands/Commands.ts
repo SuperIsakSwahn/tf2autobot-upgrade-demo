@@ -26,7 +26,7 @@ import { apiRequest } from '../../lib/apiRequest';
 // import virtualPricelist from '../../files/pricelist-steam.json'; // TS2732: Cannot find module '../../files/pricelist-steam.json'. Consider using '--resolveJsonModule' to import module with '.json' extension.
 
 
-type Instant = 'buy' | 'b' | 'sell' | 's' | 'buyfile'| 'bfile'| 'files'| 'stockfiles'; // Almost at the top of the file
+type Instant = 'buy' | 'b' | 'sell' | 's'; // Almost at the top of the file
 type CraftUncraft = 'craftweapon' | 'uncraftweapon';
 type Misc = 'time' | 'uptime' | 'pure' | 'rate' | 'owner' | 'discord' | 'stock' | 'stockcraft';
 type BlockUnblock = 'block' | 'unblock';
@@ -119,11 +119,6 @@ export default class Commands {
                     return this.bot.sendMessage(steamID, '❌ Command not available.');
                 }
                 this.buyOrSellCommand(steamID, message, command as Instant, prefix);
-            } else if (['buyfile', 'bfile', 'files', 'stockfiles'].includes(command)) { // NEW CODE
-                if (isInvalidType) {
-                    return this.bot.sendMessage(steamID, '❌ Command not available.');
-                }
-                this.buyFileCommand(steamID, message);
             } else if (['buycart', 'bcart'].includes(command)) {
                 if (isInvalidType) {
                     return this.bot.sendMessage(steamID, '❌ Command not available.');
@@ -134,11 +129,6 @@ export default class Commands {
                     return this.bot.sendMessage(steamID, '❌ Command not available.');
                 }
                 this.sellCartCommand(steamID, message, prefix);
-            } else if (command === 'describe') {
-                if (isInvalidType) {
-                    return this.bot.sendMessage(steamID, '❌ Command not available.');
-                }
-                this.describeCommand(steamID, message);
             } else if (command === 'cart') {
                 if (isInvalidType) {
                     return this.bot.sendMessage(steamID, '❌ Command not available.');
@@ -853,7 +843,6 @@ export default class Commands {
         const isBuying = match.intent === 0 || match.intent === 2;
         const isSelling = match.intent === 1 || match.intent === 2;
 
-        const buyKeyPrice = this.bot.pricelist.getKeyPrices['buy'];
         const sellKeyPrice = this.bot.pricelist.getKeyPrices['sell'];
 
         if (isBuying) {
@@ -866,9 +855,9 @@ export default class Commands {
             // If the amount is 1, then don't convert to value and then to currencies. If it is for keys, then don't use conversion rate
             reply += `${pluralize(match.name, 2)} for ${(amount === 1
                 ? match.buy
-                : Currencies.toPolishCurrencies(
-                      match.buy.toValue(buyKeyPrice.metal) * amount,
-                      match.sku === '5021;6' ? undefined : buyKeyPrice.metal, 0 , sellKeyPrice.metal
+                : Currencies.toCurrencies(
+                      match.buy.toValue(sellKeyPrice.metal) * amount,
+                      match.sku === '5021;6' ? undefined : sellKeyPrice.metal
                   )
             ).toString()}`;
         }
@@ -877,9 +866,9 @@ export default class Commands {
             const currencies =
                 amount === 1
                     ? match.sell
-                    : Currencies.toPolishCurrencies(
+                    : Currencies.toCurrencies(
                           match.sell.toValue(sellKeyPrice.metal) * amount,
-                          match.sku === '5021;6' ? undefined : sellKeyPrice.metal, 0, buyKeyPrice.metal
+                          match.sku === '5021;6' ? undefined : sellKeyPrice.metal
                       );
 
             if (reply === '') {
@@ -998,68 +987,6 @@ export default class Commands {
     }
 
     // Instant item trade
-    private buyFileCommand(steamID: SteamID, message: string): void {
-        const arg = CommandParser.removeCommand(message).trim().toLowerCase(); // becomes !buyfile if no arguments are shown
-
-        if (arg === '') {
-            const filesForSale = this.bot.steampricelist.getFiles();
-            if (filesForSale.size === 0) {
-                return this.bot.sendMessage(steamID, `I don't have any files for sale right now.`);
-            }
-
-            const list = Array.from(filesForSale.entries())
-                .map(([name]) => {
-                    let filename = name;
-                    const sellPrice = this.bot.steampricelist.getPriceBySkuOrAsset({ filename }).sell;
-                    const keys = sellPrice.keys ?? 0;
-                    const metal = sellPrice.metal ?? 0;
-
-                    // Format keys and metal into a nice string
-                    let priceStr = '';
-                    if (keys > 0) priceStr += `${keys} key${keys > 1 ? 's' : ''}`;
-                    if (metal > 0) {
-                        if (priceStr.length > 0) priceStr += ', ';
-                        priceStr += `${metal} ref`;
-                    }
-                    if (priceStr == '') priceStr = 'Free, and unsellable because it\'s not supposed to cost';
-                    return `• ${name} - ${priceStr}`;
-                })
-                .join('\n');
-
-
-            return this.bot.sendMessage(
-                steamID,
-                `These are all the files I'm selling and their prices:\n${list}\nUse "!buyfile <filename>" to purchase.`
-            );
-        }
-        const fileData = this.bot.steampricelist.findFileByFilename(arg);
-        if (!fileData) {
-            return this.bot.sendMessage(steamID, `❌ No such file found in my pricelist.`);
-        }
-        this.bot.sendMessage(steamID, `I am going to send the offer. If you accept it but don't receive the file, contact the owner immediately.`);
-        const cart = new UserCart(
-            steamID,
-            this.bot,
-            this.weaponsAsCurrency.enable ? this.bot.craftWeapons : [],
-            this.weaponsAsCurrency.enable && this.weaponsAsCurrency.withUncraft ? this.bot.uncraftWeapons : []
-        );
-
-        cart.setNotify = true;
-
-        // Fake SKU to track this as a logical trade unit
-        const filename = `file:${arg}`;
-
-
-        // Simulate adding an item the bot wants to sell
-        cart.addOurItem(filename, 1); // Dummy Entry
-        /*
-        // Inject logic to respond after successful trade
-        cart.onSuccess = () => { // TS2339: Property 'onSuccess' does not exist on type 'UserCart'.
-            this.bot.sendMessage(steamID, `✅ Trade complete! ${fileData.message}`);
-        };
-        */
-        this.addCartToQueue(cart, false, false);
-    }
 
 
     // Multiple items trade
@@ -1388,19 +1315,6 @@ export default class Commands {
                 });
             });
         }
-    }
-
-
-    private describeCommand(steamID: SteamID, message: string): void {
-        const filename = CommandParser.removeCommand(message).trim().toLowerCase();
-
-        const description = this.bot.steampricelist.getDescription(filename);
-        if (description === '\nThe filename you provided doesn\'t exist, please run "!buyfile" to see a list of all available files.') {
-            this.bot.sendMessage(steamID, description);
-        } else {
-            this.bot.sendMessage(steamID, `📄 Description for "${filename}":\n${description}`);
-        }
-
     }
 
 

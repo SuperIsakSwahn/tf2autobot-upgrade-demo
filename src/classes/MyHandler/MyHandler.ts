@@ -558,6 +558,8 @@ export default class MyHandler extends Handler {
     }
     async onNewTradeOffer(offer: TradeOffer): Promise<null | OnNewTradeOffer> {
         offer.log('info', 'is being processed...');
+        const buyKeyPrice = this.bot.pricelist.getKeyPrices['buy'];
+        const sellKeyPrice = this.bot.pricelist.getKeyPrices['sell'];
 
         // Allow sending notifications
         offer.data('notify', true);
@@ -1155,7 +1157,7 @@ export default class MyHandler extends Handler {
 
         const itemPrices: Prices = {};
 
-        const keyPrice = this.bot.pricelist.getKeyPrices[keyOurSide ? 'sell' : 'buy'];
+        // const keyPrice = this.bot.pricelist.getKeyPrices[keyOurSide ? 'sell' : 'buy'];
         let hasOverstockAndIsPartialPriced = false;
         let assetidsToCheck: string[] = [];
         let skuToCheck: string[] = [];
@@ -1182,7 +1184,7 @@ export default class MyHandler extends Handler {
                 for (const id of exchange[which].pricedAssetIds) {
                     const match = this.bot.pricelist.getPrice({ priceKey: id });
                     if (which === 'their') {
-                        const itemPrice = match[intentString].toValue(keyPrice.metal)
+                        const itemPrice = match[intentString].toValue(sellKeyPrice.metal)
                         console.log('itemPrice: ', itemPrice)
 
                         if (itemPrice == 0) {
@@ -1194,14 +1196,14 @@ export default class MyHandler extends Handler {
                             const isAustralium = id.includes('australium');
                             const quality = this.getQualityFromSKU(id);
                             let value = 0;
-                            if (quality === 0) value += 50 * Currencies.toScrap(keyPrice.metal);
+                            if (quality === 0) value += 50 * Currencies.toScrap(sellKeyPrice.metal);
                             else if (quality === 1) value += 9
                             else if (quality === 3) value += 9
                             else if (quality === 5) value += 36*9
-                            else if (quality === 9) value += 50 * Currencies.toScrap(keyPrice.metal);
+                            else if (quality === 9) value += 50 * Currencies.toScrap(sellKeyPrice.metal);
                             else if (quality === 11) value += 18;
                             else if (quality === 13) value += 18;
-                            else if (quality === 14) value += 20 * Currencies.toScrap(keyPrice.metal);
+                            else if (quality === 14) value += 20 * Currencies.toScrap(sellKeyPrice.metal);
                             else if (quality === 15) value += 1/2
                             console.log('This is quality: ', quality)
                             console.log("isFestivized is: ", isFestivized);
@@ -1209,7 +1211,7 @@ export default class MyHandler extends Handler {
                             if (id.includes(';kt-1')) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
                             else if (id.includes(';kt-2')) value += 180;
                             else if (id.includes(';kt-3')) value += 360;
-                            if (isAustralium) value += Currencies.toScrap(keyPrice.metal * 5);
+                            if (isAustralium) value += Currencies.toScrap(sellKeyPrice.metal * 5);
                             if (isFestivized) {
                                 value += 45;
                                 incrementFilenameCounter(path.join(this.bot.handler.getPaths.files.dir), 1);
@@ -1224,10 +1226,10 @@ export default class MyHandler extends Handler {
                             exchange[which].value += itemPrice;
                         }
                     } else {
-                        exchange[which].value += match[intentString].toValue(keyPrice.metal);
+                        exchange[which].value += match[intentString].toValue(sellKeyPrice.metal);
                     }
                     // Add value of items
-                    exchange[which].value += match[intentString].toValue(keyPrice.metal);
+                    exchange[which].value += match[intentString].toValue(sellKeyPrice.metal);
                     exchange[which].keys += match[intentString].keys;
                     exchange[which].scrap += Currencies.toScrap(match[intentString].metal);
                     itemPrices[id] = {
@@ -1318,25 +1320,25 @@ export default class MyHandler extends Handler {
                         // Add value of items
                         if (which === 'our') {
 
-                            exchange[which].value += match[intentString].toValue(keyPrice.metal) * amount;
+                            exchange[which].value += match[intentString].toValue(sellKeyPrice.metal) * amount;
                         } else {
-                            const itemPrice = match[intentString].toValue(keyPrice.metal);
+                            const itemPrice = match[intentString].toValue(sellKeyPrice.metal);
                             if (itemPrice == 0) {
 
-                                const weaponPrefix = Object.keys(this.valuableWeapons).find(prefix => id.startsWith(prefix));
+                                const weaponPrefix = Object.keys(this.valuableWeapons).find(prefix => sku.startsWith(prefix));
                                 const isCraftOnlyWeapon = weaponPrefix !== undefined;
                                 const isFestivized = sku.includes('festive');
                                 const isAustralium = sku.includes('australium');
                                 const quality = this.getQualityFromSKU(sku);
                                 let value = 0;
-                                if (quality === 0) value += 50 * Currencies.toScrap(keyPrice.metal);
+                                if (quality === 0) value += 50 * Currencies.toScrap(sellKeyPrice.metal);
                                 else if (quality === 1) value += 9
                                 else if (quality === 3) value += 9
                                 else if (quality === 5) value += 36*9
-                                else if (quality === 9) value += 50 * Currencies.toScrap(keyPrice.metal);
+                                else if (quality === 9) value += 50 * Currencies.toScrap(sellKeyPrice.metal);
                                 else if (quality === 11) value += 18;
                                 else if (quality === 13) value += 18;
-                                else if (quality === 14) value += 20 * Currencies.toScrap(keyPrice.metal);
+                                else if (quality === 14) value += 20 * Currencies.toScrap(sellKeyPrice.metal);
                                 else if (quality === 15) value += 1/2
                                 console.log('This is quality: ', quality)
                                 console.log("isFestivized is: ", isFestivized);
@@ -1344,7 +1346,7 @@ export default class MyHandler extends Handler {
                                 if (sku.includes(';kt-1')) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
                                 else if (sku.includes(';kt-2')) value += 180;
                                 else if (sku.includes(';kt-3')) value += 360;
-                                if (isAustralium) value += Currencies.toScrap(keyPrice.metal * 5);
+                                if (isAustralium) value += Currencies.toScrap(sellKeyPrice.metal * 5);
                                 if (isFestivized) {
                                     value += 45;
                                     incrementFilenameCounter(path.join(this.bot.handler.getPaths.files.dir), amount);
@@ -1457,7 +1459,7 @@ export default class MyHandler extends Handler {
                             }
                         }
 
-                        const buyPrice = match.buy.toValue(buyKeyPrice.metal);
+                        const buyPrice = match.buy.toValue(sellKeyPrice.metal);
                         const sellPrice = match.sell.toValue(sellKeyPrice.metal);
                         const minimumKeysDupeCheck = this.minimumKeysDupeCheck * buyKeyPrice.toValue(); // if we're checking dupes we're checking theirs i guess?
                         if (
@@ -1471,7 +1473,7 @@ export default class MyHandler extends Handler {
                         //
                     }  else if (sku === '5021;6' && exchange.contains.items) {
                         // Offer contains keys and we are not trading keys, add key value
-                        exchange[which].value += keyPrice.toValue() * amount;
+                        exchange[which].value += sellKeyPrice.metal * amount;
                         exchange[which].keys += amount;
                         //
                     } else if (
@@ -1512,20 +1514,20 @@ export default class MyHandler extends Handler {
                                     const isAustralium = sku.includes('australium');
                                     const quality = this.getQualityFromSKU(sku);
                                     let value = 0;
-                                    if (quality === 0) value += 50 * Currencies.toScrap(keyPrice.metal);
+                                    if (quality === 0) value += 50 * Currencies.toScrap(sellKeyPrice.metal);
                                     else if (quality === 1) value += 9
                                     else if (quality === 3) value += 9
                                     else if (quality === 5) value += 36*9
-                                    else if (quality === 9) value += 50 * Currencies.toScrap(keyPrice.metal);
+                                    else if (quality === 9) value += 50 * Currencies.toScrap(sellKeyPrice.metal);
                                     else if (quality === 11) value += 18;
                                     else if (quality === 13) value += 18;
-                                    else if (quality === 14) value += 20 * Currencies.toScrap(keyPrice.metal);
+                                    else if (quality === 14) value += 20 * Currencies.toScrap(sellKeyPrice.metal);
                                     else if (quality === 15) value += 1/2
                                     let isCosmetic = false;
                                     if (sku.includes(';kt-1')) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
                                     else if (sku.includes(';kt-2')) value += 180;
                                     else if (sku.includes(';kt-3')) value += 360;
-                                    if (isAustralium) value += Currencies.toScrap(keyPrice.metal * 5);
+                                    if (isAustralium) value += Currencies.toScrap(sellKeyPrice.metal * 5);
                                     if (isFestivized) {
                                         value += 45;
                                         incrementFilenameCounter(path.join(this.bot.handler.getPaths.files.dir), amount);
@@ -1557,17 +1559,17 @@ export default class MyHandler extends Handler {
                                 ) {
                                     // if offerReceived.invalidItems.givePrice is set to true (enable) and items is not skins/war paint/crate/cases,
                                     // then give that item price and include in exchange
-                                    exchange[which].value += price[intentString].toValue(keyPrice.metal) * amount;
+                                    exchange[which].value += price[intentString].toValue(sellKeyPrice.metal) * amount;
                                     exchange[which].keys += price[intentString].keys * amount;
                                     exchange[which].scrap += Currencies.toScrap(price[intentString].metal) * amount;
                                 }
                                 const valueInRef = {
-                                    buy: Currencies.toRefined(price.buy.toValue(keyPrice.metal)),
-                                    sell: Currencies.toRefined(price.sell.toValue(keyPrice.metal))
+                                    buy: Currencies.toRefined(price.buy.toValue(sellKeyPrice.metal)),
+                                    sell: Currencies.toRefined(price.sell.toValue(sellKeyPrice.metal))
                                 };
 
                                 itemSuggestedValue =
-                                    (intentString === 'buy' ? valueInRef.buy : valueInRef.sell) >= keyPrice.metal
+                                    (intentString === 'buy' ? valueInRef.buy : valueInRef.sell) >= sellKeyPrice.metal
                                         ? `${valueInRef.buy.toString()} ref (${price.buy.toString()})` +
                                           ` / ${valueInRef.sell.toString()} ref (${price.sell.toString()})`
                                         : `${price.buy.toString()} / ${price.sell.toString()}`;
@@ -1588,9 +1590,9 @@ export default class MyHandler extends Handler {
 
         // Doing this so that the prices will always be displayed as only metal
         if (opt.miscSettings.showOnlyMetal.enable) {
-            exchange.our.scrap += exchange.our.keys * keyPrice.toValue();
+            exchange.our.scrap += exchange.our.keys * sellKeyPrice.metal;
             exchange.our.keys = 0;
-            exchange.their.scrap += exchange.their.keys * keyPrice.toValue();
+            exchange.their.scrap += exchange.their.keys * sellKeyPrice.metal;
             exchange.their.keys = 0;
         }
 
@@ -1605,7 +1607,7 @@ export default class MyHandler extends Handler {
                 keys: exchange.their.keys,
                 metal: Currencies.toRefined(exchange.their.scrap)
             },
-            rate: keyPrice.metal
+            rate: sellKeyPrice.metal
         });
 
         offer.data('prices', itemPrices);

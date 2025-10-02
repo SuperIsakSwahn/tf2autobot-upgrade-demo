@@ -57,22 +57,7 @@ export default class PricelistManagerCommands {
                 params.intent = intent;
             }
         }
-        if (params.priority === undefined) {
-            params.priority = 0; // default neutral priority
-        } else {
-            params.priority = Number(params.priority);
-            if (Number.isNaN(params.priority)) params.priority = 0;
-        }
 
-        if (params.listings === undefined)  {
-            params.listings = 2;
-        } else if (typeof params.listings === 'string') {
-            const listings = ['buy', 'sell', 'bank', 'off'].indexOf(params.listings.toLowerCase());
-
-            if (listings !== -1) {
-                params.listings = listings;
-            }
-        }
 
         if (typeof params.buy === 'object') {
             params.buy.keys = params.buy.keys || 0;
@@ -160,27 +145,6 @@ export default class PricelistManagerCommands {
 
         if (params.isPartialPriced === undefined) {
             params.isPartialPriced = false;
-        }
-        /*
-        // parse priority from command params
-        if (params.priority === undefined) {
-            params.priority = 0;
-        } else {
-         */
-
-// parse priority from command params
-        if (params.priority !== undefined) {
-            // Allow string or number, convert to integer
-            if (typeof params.priority === 'string') {
-                const p = parseInt(params.priority, 10);
-                if (Number.isNaN(p)) {
-                    return this.bot.sendMessage(steamID, '❌ "priority" must be a number (integer >= 0)');
-                }
-                params.priority = p;
-            }
-            if (typeof params.priority !== 'number') {
-                return this.bot.sendMessage(steamID, '❌ "priority" must be a number (integer >= 0)');
-            }
         }
 
         if (params.sku !== undefined && !testPriceKey(params.sku as string)) {
@@ -251,7 +215,6 @@ export default class PricelistManagerCommands {
             params.id = String(params.id);
             // force intent sell for assetid added
             params.intent = 1;
-            params.listings = 1;
         }
         priceKey = priceKey ? priceKey : params.sku;
         return this.bot.pricelist
@@ -287,15 +250,6 @@ export default class PricelistManagerCommands {
 
             if (intent !== -1) {
                 params.intent = intent;
-            }
-        }
-        if (params.listings === undefined) {
-            params.listings = 2;
-        } else if (typeof params.listings === 'string') {
-            const listings = ['buy', 'sell', 'bank', 'off'].indexOf(params.listings.toLowerCase());
-
-            if (listings !== -1) {
-                params.listings = listings;
             }
         }
 
@@ -421,7 +375,6 @@ export default class PricelistManagerCommands {
             params.id = String(params.id);
             // force intent sell for assetid added
             params.intent = 1;
-            params.listings = 1;
         }
         priceKey = priceKey ? priceKey : params.sku;
         return this.bot.pricelist
@@ -531,15 +484,6 @@ export default class PricelistManagerCommands {
 
                 if (intent !== -1) {
                     params.intent = intent;
-                }
-            }
-            if (params.listings === undefined) {
-                params.listings = 2;
-            } else if (typeof params.listings === 'string') {
-                const listings = ['buy', 'sell', 'bank', 'off'].indexOf(params.listings.toLowerCase());
-
-                if (listings !== -1) {
-                    params.listings = listings;
                 }
             }
 
@@ -812,15 +756,6 @@ export default class PricelistManagerCommands {
             }
         }
 
-        if (params.listings === undefined) {
-            params.listings = 2;
-        } else if (typeof params.listings === 'string') {
-            const listings = ['buy', 'sell', 'bank', 'off'].indexOf(params.listings.toLowerCase());
-
-            if (listings !== -1) {
-                params.listings = listings;
-            }
-        }
 
         if (typeof params.buy === 'object') {
             params.buy.keys = params.buy.keys || 0;
@@ -995,13 +930,6 @@ export default class PricelistManagerCommands {
             }
         }
 
-        if (typeof params.listings === 'string') {
-            const listings = ['buy', 'sell', 'bank', 'off'].indexOf(params.listings.toLowerCase());
-
-            if (listings !== -1) {
-                params.listings = listings;
-            }
-        }
 
         if (params.all === true) {
             //Check for invalid usages first
@@ -1083,9 +1011,6 @@ export default class PricelistManagerCommands {
 
                 if (params.intent || params.intent === 0) {
                     entry.intent = params.intent as 0 | 1 | 2;
-                }
-                if (params.listings || params.listings === 0) {
-                    entry.listings = params.listings as 0 | 1 | 2 | 3;
                 }
 
                 if (typeof params.min === 'number') {
@@ -1560,13 +1485,6 @@ export default class PricelistManagerCommands {
                 }
             }
 
-            if (typeof params.listings === 'string') {
-                const listings = ['buy', 'sell', 'bank', 'off'].indexOf(params.listings.toLowerCase());
-
-                if (listings !== -1) {
-                    params.listings = listings;
-                }
-            }
 
             if (params.resetgroup) {
                 // if resetgroup (when sending "!update item=<itemName>&resetgroup=true") is defined,
@@ -1895,18 +1813,6 @@ export default class PricelistManagerCommands {
                         newEntry.intent === 2 ? 'bank' : newEntry.intent === 1 ? 'sell' : 'buy'
                     }`
                     : `${newEntry.intent === 2 ? 'bank' : newEntry.intent === 1 ? 'sell' : 'buy'}`
-            }` +
-            `\n🛒 Listings: ${ // ADJUST THIS SO IT SUPPORTS THE THIRD PARAMETER, OFF
-                oldEntry.listings !== newEntry.listings
-                    ? `${oldEntry.listings === 0 ? 'buy' : oldEntry.listings === 1 ? 'sell' : oldEntry.listings === 2 ? 'bank' : 'off'} → ${
-                        newEntry.listings === 0 ? 'buy' : newEntry.listings === 1 ? 'sell' : newEntry.listings === 2 ? 'bank' : 'off'
-                    }`
-                    : `${newEntry.listings === 0 ? 'buy' : newEntry.listings === 1 ? 'sell' : newEntry.listings === 2 ? 'bank' : 'off'}`
-            }` +
-            `\n⏫ Priority: ${ // ADJUST THIS SO IT SUPPORTS THE THIRD PARAMETER, OFF
-                oldEntry.priority !== newEntry.listings
-                    ? `${oldEntry.priority} → ${newEntry.priority}`
-                    : `${newEntry.priority}`
             }` +
             `\n📋 Enabled: ${
                 oldEntry.enabled !== newEntry.enabled
@@ -2491,7 +2397,6 @@ export default class PricelistManagerCommands {
                 params.max !== undefined ||
                 params.min !== undefined ||
                 params.intent !== undefined ||
-                params.listings !== undefined ||
                 params.autoprice !== undefined ||
                 params.group !== undefined ||
                 params.promoted !== undefined ||
@@ -2685,8 +2590,6 @@ function generateAddedReply(bot: Bot, isPremium: boolean, entry: Entry): string 
     return (
         `\n💲 Buy: ${entry.buy.toString()} | Sell: ${entry.sell.toString()}` +
         `\n🛒 Intent: ${entry.intent === 2 ? 'bank' : entry.intent === 1 ? 'sell' : 'buy'}` +
-        `\n🛒 Listings: ${entry.listings === 0 ? 'buy' : entry.listings === 1 ? 'sell' : entry.listings === 2 ? 'bank' : 'off'}` +
-        `\n⏫ Priority: ${entry.priority}` +
         `\n📦 Stock: ${amount} | Min: ${entry.min} | Max: ${entry.max}` +
         `\n📋 Enabled: ${entry.enabled ? '✅' : '❌'}` +
         `\n🔄 Autoprice: ${entry.autoprice ? '✅' : '❌'}` +
