@@ -41,17 +41,17 @@ export default class StatusCommands {
 
         const keyPrices = this.bot.pricelist.getKeyPrices;
 
-        const timedProfitmadeFull = Currencies.toCurrencies(profits.profitTimed, keyPrices.sell.metal).toString();
+        const timedProfitmadeFull = Currencies.toPolishCurrencies(profits.profitTimed, keyPrices.sell.metal).toString();
         const timedProfitmadeInRef = timedProfitmadeFull.includes('key')
             ? ` (${Currencies.toRefined(profits.profitTimed)} ref)`
             : '';
 
-        const profitmadeFull = Currencies.toCurrencies(profits.tradeProfit, keyPrices.sell.metal).toString();
+        const profitmadeFull = Currencies.toPolishCurrencies(profits.tradeProfit, keyPrices.sell.metal).toString();
         const profitmadeInRef = profitmadeFull.includes('key')
             ? ` (${Currencies.toRefined(profits.tradeProfit)} ref)`
             : '';
 
-        const profitOverpayFull = Currencies.toCurrencies(profits.overpriceProfit, keyPrices.sell.metal).toString();
+        const profitOverpayFull = Currencies.toPolishCurrencies(profits.overpriceProfit, keyPrices.sell.metal).toString();
         const profitOverpayInRef = profitOverpayFull.includes('key')
             ? ` (${Currencies.toRefined(profits.overpriceProfit)} ref)`
             : '';
@@ -59,49 +59,49 @@ export default class StatusCommands {
         this.bot.sendMessage(
             steamID,
             `All trades (accepted) are recorded from ${pluralize('day', trades.totalDays, true)}` +
-                ' ago 📊\n Total accepted trades: ' +
-                (tradesFromEnv !== 0
-                    ? String(tradesFromEnv + trades.totalAcceptedTrades)
-                    : String(trades.totalAcceptedTrades)) +
-                `\nFestivized items bought: ${festivizedFallbackCount}` +
-                `\n\n--- Last 24 hours ---` +
-                `\n• Processed: ${trades.hours24.processed}` +
-                `\n• Accepted: ${trades.hours24.accepted.offer.total + trades.hours24.accepted.sent}` +
-                `\n---• Received offer: ${trades.hours24.accepted.offer.total}` +
-                `\n------• Countered: ${trades.hours24.accepted.offer.countered}` +
-                `\n---• Sent offer: ${trades.hours24.accepted.sent}` +
-                `\n• Declined: ${trades.hours24.decline.offer.total + trades.hours24.decline.sent}` +
-                `\n---• Received offer: ${trades.hours24.decline.offer.total}` +
-                `\n------• Countered: ${trades.hours24.decline.offer.countered}` +
-                `\n---• Sent offer: ${trades.hours24.decline.sent}` +
-                `\n• Skipped: ${trades.hours24.skipped}` +
-                `\n• Traded away: ${trades.hours24.invalid}` +
-                `\n• Canceled: ${trades.hours24.canceled.total}` +
-                `\n---• by user: ${trades.hours24.canceled.byUser}` +
-                `\n---• confirmation failed: ${trades.hours24.canceled.failedConfirmation}` +
-                `\n---• unknown reason: ${trades.hours24.canceled.unknown}` +
-                `\n\n--- Since beginning of today ---` +
-                `\n• Processed: ${trades.today.processed}` +
-                `\n• Accepted: ${trades.today.accepted.offer.total + trades.today.accepted.sent}` +
-                `\n---• Received offer: ${trades.today.accepted.offer.total}` +
-                `\n------• Countered: ${trades.today.accepted.offer.countered}` +
-                `\n---• Sent offer: ${trades.today.accepted.sent}` +
-                `\n• Declined: ${trades.today.decline.offer.total + trades.today.decline.sent}` +
-                `\n---• Received offer: ${trades.today.decline.offer.total}` +
-                `\n------• Countered: ${trades.today.decline.offer.countered}` +
-                `\n---• Sent offer: ${trades.today.decline.sent}` +
-                `\n• Skipped: ${trades.today.skipped}` +
-                `\n• Traded away: ${trades.today.invalid}` +
-                `\n• Canceled: ${trades.today.canceled.total}` +
-                `\n---• by user: ${trades.today.canceled.byUser}` +
-                `\n---• confirmation failed: ${trades.today.canceled.failedConfirmation}` +
-                `\n---• unknown reason: ${trades.today.canceled.unknown}` +
-                `\n\n Profit (last 24h): ${timedProfitmadeFull + timedProfitmadeInRef}` +
-                `\nProfit made: ${profitmadeFull + profitmadeInRef} ${
-                    profits.since !== 0 ? ` (since ${pluralize('day', profits.since, true)} ago)` : ''
-                }` +
-                `\nProfit from overpay: ${profitOverpayFull + profitOverpayInRef}` +
-                `\nKey rate: ${keyPrices.buy.metal}/${keyPrices.sell.metal} ref`
+            ' ago 📊\n Total accepted trades: ' +
+            (tradesFromEnv !== 0
+                ? String(tradesFromEnv + trades.totalAcceptedTrades)
+                : String(trades.totalAcceptedTrades)) +
+            `\nFestivized items bought: ${festivizedFallbackCount}` +
+            `\n\n--- Last 24 hours ---` +
+            `\n• Processed: ${trades.hours24.processed}` +
+            `\n• Accepted: ${trades.hours24.accepted.offer.total + trades.hours24.accepted.sent}` +
+            `\n---• Received offer: ${trades.hours24.accepted.offer.total}` +
+            `\n------• Countered: ${trades.hours24.accepted.offer.countered}` +
+            `\n---• Sent offer: ${trades.hours24.accepted.sent}` +
+            `\n• Declined: ${trades.hours24.decline.offer.total + trades.hours24.decline.sent}` +
+            `\n---• Received offer: ${trades.hours24.decline.offer.total}` +
+            `\n------• Countered: ${trades.hours24.decline.offer.countered}` +
+            `\n---• Sent offer: ${trades.hours24.decline.sent}` +
+            `\n• Skipped: ${trades.hours24.skipped}` +
+            `\n• Traded away: ${trades.hours24.invalid}` +
+            `\n• Canceled: ${trades.hours24.canceled.total}` +
+            `\n---• by user: ${trades.hours24.canceled.byUser}` +
+            `\n---• confirmation failed: ${trades.hours24.canceled.failedConfirmation}` +
+            `\n---• unknown reason: ${trades.hours24.canceled.unknown}` +
+            `\n\n--- Since beginning of today ---` +
+            `\n• Processed: ${trades.today.processed}` +
+            `\n• Accepted: ${trades.today.accepted.offer.total + trades.today.accepted.sent}` +
+            `\n---• Received offer: ${trades.today.accepted.offer.total}` +
+            `\n------• Countered: ${trades.today.accepted.offer.countered}` +
+            `\n---• Sent offer: ${trades.today.accepted.sent}` +
+            `\n• Declined: ${trades.today.decline.offer.total + trades.today.decline.sent}` +
+            `\n---• Received offer: ${trades.today.decline.offer.total}` +
+            `\n------• Countered: ${trades.today.decline.offer.countered}` +
+            `\n---• Sent offer: ${trades.today.decline.sent}` +
+            `\n• Skipped: ${trades.today.skipped}` +
+            `\n• Traded away: ${trades.today.invalid}` +
+            `\n• Canceled: ${trades.today.canceled.total}` +
+            `\n---• by user: ${trades.today.canceled.byUser}` +
+            `\n---• confirmation failed: ${trades.today.canceled.failedConfirmation}` +
+            `\n---• unknown reason: ${trades.today.canceled.unknown}` +
+            `\n\n Profit (last 24h): ${timedProfitmadeFull + timedProfitmadeInRef}` +
+            `\nProfit made: ${profitmadeFull + profitmadeInRef} ${
+                profits.since !== 0 ? ` (since ${pluralize('day', profits.since, true)} ago)` : ''
+            }` +
+            `\nProfit from overpay: ${profitOverpayFull + profitOverpayInRef}` +
+            `\nKey rate: ${keyPrices.buy.metal}/${keyPrices.sell.metal} ref`
         );
     }
 
@@ -126,8 +126,8 @@ export default class StatusCommands {
             return this.bot.sendMessage(
                 steamID,
                 `⚠️ Are you sure you want to delete all stats?` +
-                    `\n- This process is irreversible and will delete the record of accepted trades!` +
-                    `\n- If you're sure, try again with i_am_sure=yes_i_am as a parameter.`
+                `\n- This process is irreversible and will delete the record of accepted trades!` +
+                `\n- If you're sure, try again with i_am_sure=yes_i_am as a parameter.`
             );
         }
 
@@ -332,13 +332,13 @@ export default class StatusCommands {
                         : '') +
                     (pastWeekBoughtCount
                         ? (past60MinutesBoughtCount || past24HoursBoughtCount ? '\n' : '') +
-                          'Past 7 days\n' +
-                          boughtLastX[2]
+                        'Past 7 days\n' +
+                        boughtLastX[2]
                         : '') +
                     (past4WeeksBoughtCount
                         ? (past60MinutesBoughtCount || past24HoursBoughtCount || pastWeekBoughtCount ? '\n' : '') +
-                          'Past 4 weeks\n' +
-                          boughtLastX[3]
+                        'Past 4 weeks\n' +
+                        boughtLastX[3]
                         : '');
 
                 const past60MinutesSoldCount = soldLastX[0].length;
@@ -357,8 +357,8 @@ export default class StatusCommands {
                         : '') +
                     (past4WeeksSoldCount
                         ? (past60MinutesSoldCount || past24HoursSoldCount || pastWeekSoldCount ? '\n' : '') +
-                          'Past 4 weeks\n' +
-                          soldLastX[3]
+                        'Past 4 weeks\n' +
+                        soldLastX[3]
                         : '');
 
                 const all = boughtMessage + soldMessage;
@@ -372,11 +372,11 @@ export default class StatusCommands {
 
                 if (this.bot.isAdmin(steamID)) {
                     // Admin only
-                    const boughtValue = Currencies.toCurrencies(totalBoughtValue, keyPrice);
+                    const boughtValue = Currencies.toPolishCurrencies(totalBoughtValue, keyPrice);
                     const boughtValueToString = boughtValue.toString();
-                    const soldValue = Currencies.toCurrencies(totalSoldValue, keyPrice);
+                    const soldValue = Currencies.toPolishCurrencies(totalSoldValue, keyPrice);
                     const soldValueToString = soldValue.toString();
-                    const netProfit = Currencies.toCurrencies(totalSoldValue - totalBoughtValue, keyPrice);
+                    const netProfit = Currencies.toPolishCurrencies(totalSoldValue - totalBoughtValue, keyPrice);
                     const netProfitToString = netProfit.toString();
 
                     adminOnlyMessage =
@@ -433,8 +433,8 @@ export default class StatusCommands {
                     this.bot.sendMessage(
                         steamID,
                         `⚠️ Update available! Current: v${process.env.BOT_VERSION}, Latest: v${latestVersion}.` +
-                            `\n\n📰 Release note: https://github.com/TF2Autobot/tf2autobot/releases` +
-                            (updateMessage ? `\n\n💬 Update message: ${updateMessage}` : '')
+                        `\n\n📰 Release note: https://github.com/TF2Autobot/tf2autobot/releases` +
+                        (updateMessage ? `\n\n💬 Update message: ${updateMessage}` : '')
                     );
                     await timersPromises.setTimeout(1000);
 
@@ -481,5 +481,12 @@ export default class StatusCommands {
                 const errMessage = errStringify === '' ? (err as Error)?.message : errStringify;
                 this.bot.sendMessage(steamID, `❌ Failed to check for updates: ${errMessage}`);
             });
+        this.bot.checkUpgradeUpdates(true)
+            .catch(err => {
+                const errStringify = JSON.stringify(err);
+                const errMessage = errStringify === '' ? (err as Error)?.message : errStringify;
+                this.bot.sendMessage(steamID, `❌ Failed to check for updates: ${errMessage}`);
+            });
+        // add any necessary code
     }
 }

@@ -1197,14 +1197,13 @@ export default class MyHandler extends Handler {
                             const quality = this.getQualityFromSKU(id);
                             let value = 0;
                             if (quality === 0) value += 50 * Currencies.toScrap(sellKeyPrice.metal);
-                            else if (quality === 1) value += 9
-                            else if (quality === 3) value += 9
-                            else if (quality === 5) value += 36*9
+                            else if (quality === 1) value += 9;
+                            else if (quality === 3) value += 9;
+                            else if (quality === 5) value += 324;
                             else if (quality === 9) value += 50 * Currencies.toScrap(sellKeyPrice.metal);
                             else if (quality === 11) value += 18;
                             else if (quality === 13) value += 18;
                             else if (quality === 14) value += 20 * Currencies.toScrap(sellKeyPrice.metal);
-                            else if (quality === 15) value += 1/2
                             console.log('This is quality: ', quality)
                             console.log("isFestivized is: ", isFestivized);
                             let isCosmetic = false;
