@@ -830,7 +830,6 @@ export default class Commands {
             '947;6',
             '474;6',
             '1013;6',
-            '880;6',
             '572;6',
             '237;6;uncraftable',
             '452;6;uncraftable',
@@ -843,7 +842,6 @@ export default class Commands {
             '947;6;uncraftable',
             '474;6;uncraftable',
             '1013;6;uncraftable',
-            '880;6;uncraftable',
             '572;6;uncraftable',
         ]
     };
@@ -3665,3 +3663,4 @@ interface Item {
     num_for_sale: number;
     price: number; // cent
 }
+
