@@ -788,6 +788,12 @@ export default class Commands {
         scrap: [
             '5000;6'
         ],
+        tods: [
+            '5050;6',
+            '725;6',
+            '5050;6;uncraftable',
+            '725;6;uncraftable',
+        ],
         valuable: [
             '237;6',
             '452;6',
@@ -3663,4 +3669,3 @@ interface Item {
     num_for_sale: number;
     price: number; // cent
 }
-
