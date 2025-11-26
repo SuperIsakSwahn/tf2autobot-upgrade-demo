@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, Method } from 'axios';
 import filterAxiosError from '@tf2autobot/filter-axios-error';
-import { PricerOptions } from '../../../classes/IPricer edited';
+import { PricerOptions } from '../../../classes/IPricer';
 
 export interface PricesCurrency {
     keys: number;
@@ -126,3 +126,4 @@ export default class CustomPricerApi {
         };
     }
 }
+
