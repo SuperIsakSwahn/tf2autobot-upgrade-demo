@@ -515,7 +515,7 @@ export default class Bot {
     async checkUpgradeUpdates(anyoneAsked=false): Promise<void> {
         try {
             const content = await this.getLatestUpgradeVersion();
-            const currentVersion = '1.3'; // your local version number
+            const currentVersion = '1.4'; // your local version number
 
             if (content.version !== currentVersion) {
                 const dmText = `⚠️ tf2autobot-upgrade-demo update available!\nCurrent: v${currentVersion}\nLatest: v${content.version}\nDownload: https://github.com/SuperIsakSwahn/tf2autobot-upgrade-demo`;
