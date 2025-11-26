@@ -6,7 +6,7 @@ import IPricer, {
     Item,
     PricerOptions,
     RequestCheckResponse
-} from '../../../classes/IPricer edited';
+} from '../../../classes/IPricer';
 import CustomPricerApi, { CustomPricesGetItemPriceResponse, CustomPricesItemMessageEvent } from './custom-pricer-api';
 
 export default class CustomPricer implements IPricer {
@@ -100,3 +100,4 @@ export default class CustomPricer implements IPricer {
         });
     }
 }
+
