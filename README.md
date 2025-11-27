@@ -2,7 +2,7 @@ Should be simple, just replace the existing files with src then run tsc in the b
 
 Steam group: https://steamcommunity.com/groups/tf2autobot-upgrade
 Discord: https://discord.gg/rwDN7tdzMB
-License for the premium/full version: https://github.com/SuperIsakSwahn/tf2autobot-upgrade-demo/blob/main/LICENSE-ORIGINAL
+License for the premium/full version: https://github.com/SuperIsakSwahn/tf2autobot-upgrade-demo/blob/main/LICENSE-PREMIUM
 
 Description of the full version:
 
