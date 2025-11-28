@@ -1,2 +1,2 @@
-tf2autobot-upgrade: 1.14
+tf2autobot-upgrade: 1.15
 tf2autobot-upgrade-demo: 1.4
