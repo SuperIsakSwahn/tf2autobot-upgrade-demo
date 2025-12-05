@@ -1,6 +1,7 @@
 Should be simple, just replace the existing files with src then run tsc in the bot's folder or whatever it is you use to create the dist folder
 
-How to buy it: Add a bot and send !buy tf2autobot-upgrade
+How to buy it: Add my bot and send !buy tf2autobot-upgrade
+One of my bots: https://steamcommunity.com/id/PolishBot1
 
 Steam group: https://steamcommunity.com/groups/tf2autobot-upgrade
 Discord: https://discord.gg/rwDN7tdzMB
