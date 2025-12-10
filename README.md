@@ -5,7 +5,9 @@ How to buy it: Add my bot and send !buy tf2autobot-upgrade
 One of my bots: https://steamcommunity.com/id/PolishBot1
 
 Steam group: https://steamcommunity.com/groups/tf2autobot-upgrade
+
 Discord: https://discord.gg/rwDN7tdzMB
+
 License for the premium/full version: https://github.com/SuperIsakSwahn/tf2autobot-upgrade-demo/blob/main/LICENSE-PREMIUM
 
 Description of the full version:
