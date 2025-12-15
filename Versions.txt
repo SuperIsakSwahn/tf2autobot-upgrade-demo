@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.16
+tf2autobot-upgrade: 1.18
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
