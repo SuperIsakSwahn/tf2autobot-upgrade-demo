@@ -1,6 +1,9 @@
-tf2autobot-upgrade: 1.18
+tf2autobot-upgrade: 1.19
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
 I don't really remember all the changes but I added more stuff to tokenGroups and I made it so for the premium version you can combine any tokens with &imsure.
 I set "alwaysDeclineNonTF2Items" to false by default, it was true by default
+
+Changes for 1.19:
+Added !ctbulk and !ctkbulk, they perform the good token operations with one command.
