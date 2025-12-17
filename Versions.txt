@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.19
+tf2autobot-upgrade: 1.20
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -7,3 +7,6 @@ I set "alwaysDeclineNonTF2Items" to false by default, it was true by default
 
 Changes for 1.19:
 Added !ctbulk and !ctkbulk, they perform the good token operations with one command.
+
+Changes for 1.20:
+Copy-pasted some stuff from bliss's fork of tf2autobot, I don't think I've completed it because the bot isn't making listings on pricedb.io
