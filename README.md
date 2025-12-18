@@ -40,3 +40,27 @@ The program also has a new feature which you are using right now, you can sell f
 There's an upgrade to the upgrade that makes it so no matter what the pricelist says, your bot buys tickets and expanders for 1/3 keys each and sells for 1/2 keys. If your bot gets offers matching the pricelist, it will be sent for review.
 
 Do not download pirated versions of this! Only go to the links my bot give you. Pirated versions could be dangerous and steal your items.
+
+Dead ringers and cloak and daggers are excluded when you craft spy tokens because they're the only weapons to craft pda2 with, not a lot.
+Quick-fixes, rocket jumpers and vaccinators are excluded from token crafting.
+
+1.19: Added ctbulk which crafts tokens in this order:
+• pda2
+• spy
+• melee
+• scout
+• pyro
+• heavy
+
+With it set to max, always. Might add an amount parameter but I don't see a lot of people using it, if anyone asks for it I'll add it.
+
+Also added !ctkbulk which combines tokens in this order:
+
+• heavy + melee
+• scout + melee
+• spy + pda2
+• pyro + melee
+• spy + melee
+
+
+You should be able to change this pretty easily in src/classes/commands/sub-classes/Crafting.ts and look for const bulkOrder
