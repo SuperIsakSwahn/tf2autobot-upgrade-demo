@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.20
+tf2autobot-upgrade: 1.21
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -10,3 +10,10 @@ Added !ctbulk and !ctkbulk, they perform the good token operations with one comm
 
 Changes for 1.20:
 Copy-pasted some stuff from bliss's fork of tf2autobot, I don't think I've completed it because the bot isn't making listings on pricedb.io
+
+1.21:
+
+Added 
+                listings: priceListEntry.listings,
+                priority: priceListEntry.priority,
+to updateListings.ts
