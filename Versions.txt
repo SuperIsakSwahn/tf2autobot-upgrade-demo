@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.21
+tf2autobot-upgrade: 1.22
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -17,3 +17,5 @@ Added
                 listings: priceListEntry.listings,
                 priority: priceListEntry.priority,
 to updateListings.ts
+
+1.22: There's no update, please don't use tf2autobot-upgrade until 1.23, a critical value mismatching was discovered and you don't want to run your bots with that bug.
