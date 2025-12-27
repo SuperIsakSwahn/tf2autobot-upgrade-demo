@@ -19,3 +19,4 @@ Added
 to updateListings.ts
 
 1.22: There's no update, please don't use tf2autobot-upgrade until 1.23, a critical value mismatching was discovered and you don't want to run your bots with that bug.
+If you read this, change the version number from 1.21 to 1.22 in Bot.ts to stop getting notifications and turn off the buy or sell commands in options, then you can use this without the bug
