@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.23
+tf2autobot-upgrade: 1.24
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -41,3 +41,8 @@ In amountCanAfford itself it said const value = isBuyer ? buyKey : sellKey; whic
 
 
 I think it works now, I've been working for many hours on this. Hopefully all catastrophic errors are gone.
+
+
+1.24:
+
+Added a function that automatically repairs pricelist.json on startup, slightly tested.
