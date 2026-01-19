@@ -20,3 +20,21 @@ to updateListings.ts
 
 1.22: There's no update, please don't use tf2autobot-upgrade until 1.23, a critical value mismatching was discovered and you don't want to run your bots with that bug.
 If you read this, change the version number from 1.21 to 1.22 in Bot.ts to stop getting notifications and turn off the buy or sell commands in options, then you can use this without the bug
+
+1.23:
+Fixed that critical value mismatch bug. I haven't tested it a lot yet but it should work now since I have tested it at least once and it worked, so you can turn on buy/sell commands again
+If you're curious about what it was
+Say you have no metal, the bot you're trading with does and you send a command to buy a quick-fix for 0.22 ref
+This would happen:
+⌛ Please wait while I process your offer! You will be offered a Quick-Fix and 0.22 ref for 0 keys, 0 ref.
+
+It happens the other way around too (it was discovered this way actually, a bot tried to take a quick-fix and 0.22 ref for nothing or something like that)
+Bugs:
+In PolishUserCart it said this:
+        if (this.bot.inventoryManager.amountCanAfford(true, currencies, buyerInventory, []) < 1) {
+I changed it to this:
+        if (this.bot.inventoryManager.amountCanAfford(true, currencies, buyerInventory, [], isBuyer, sellKeyPrice.metal, buyKeyPrice.metal) < 1) {
+
+In amountCanAfford itself it said const value = isBuyer ? buyKey : sellKey; which is a big mistake, it's supposed to be:
+        const keyRate = isBuyer ? buyKey : sellKey;
+        const value = price.toValue(keyRate);
