@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.24
+tf2autobot-upgrade: 1.25
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -46,3 +46,6 @@ I think it works now, I've been working for many hours on this. Hopefully all ca
 1.24:
 
 Added a function that automatically repairs pricelist.json on startup, slightly tested.
+
+
+1.25 Improvements to bulk operation commands (like fixed abbreviations)
