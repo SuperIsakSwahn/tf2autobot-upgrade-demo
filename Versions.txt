@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.26
+tf2autobot-upgrade: 1.27
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -52,3 +52,5 @@ Added a function that automatically repairs pricelist.json on startup, slightly 
 
 1.26:
 Bug fixes
+
+1.27: Fixed a crash
