@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.28
+tf2autobot-upgrade: 1.29
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -56,3 +56,5 @@ Bug fixes
 1.27: Fixed a crash
 
 1.28: Improved command handling & bug fix
+
+1.29: Made the price request command smarter
