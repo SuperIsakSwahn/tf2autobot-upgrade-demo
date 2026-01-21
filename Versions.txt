@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.29
+tf2autobot-upgrade: 1.30
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -60,3 +60,6 @@ Bug fixes
 1.28: Improved command handling & bug fix
 
 1.29: Made the price request command smarter
+
+1.30:
+Bug with extractItem ALWAYS adding item= to the message fixed
