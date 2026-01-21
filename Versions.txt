@@ -41,6 +41,8 @@ In amountCanAfford itself it said const value = isBuyer ? buyKey : sellKey; whic
 
 
 I think it works now, I've been working for many hours on this. Hopefully all catastrophic errors are gone.
+This guy discovered the bug: https://steamcommunity.com/id/choubidou13
+If you see him, let him know he can get a tour of duty ticket as a reward
 
 
 1.24:
