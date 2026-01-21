@@ -54,3 +54,5 @@ Added a function that automatically repairs pricelist.json on startup, slightly 
 Bug fixes
 
 1.27: Fixed a crash
+
+1.28: Improved command handling & bug fix
