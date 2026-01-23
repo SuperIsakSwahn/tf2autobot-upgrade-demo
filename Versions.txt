@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.30
+tf2autobot-upgrade: 1.31
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -37,7 +37,7 @@ I changed it to this:
 
 In amountCanAfford itself it said const value = isBuyer ? buyKey : sellKey; which is a big mistake, it's supposed to be:
         const keyRate = isBuyer ? buyKey : sellKey;
-        const value = price.toValue(keyRate);
+        const value = price.toValue(keyRate);d
 
 
 I think it works now, I've been working for many hours on this. Hopefully all catastrophic errors are gone.
@@ -63,3 +63,6 @@ Bug fixes
 
 1.30:
 Bug with extractItem ALWAYS adding item= to the message fixed
+
+1.31:
+Fixed incorrect value handling when the bot is selling tickets/expanders for 0.5 keys each
