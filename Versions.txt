@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.33
+tf2autobot-upgrade: 1.34
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -75,3 +75,7 @@ Fixed a couple of rounding errors
 1.33:
 
 Fixed another rounding error
+
+1.34:
+
+Before, if you buy a file like tf2autobot-upgrade, it says "⌛ Please wait while I process your offer! You will be offered a Normal Bat for 25 keys.", I fixed it so it now says "⌛ Please wait while I process your offer! You will be offered a tf2autobot-upgrade for 25 keys."
