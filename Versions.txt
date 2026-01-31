@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.35
+tf2autobot-upgrade: 1.36
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -83,3 +83,7 @@ Before, if you buy a file like tf2autobot-upgrade, it says "⌛ Please wait whil
 1.35:
 
 Basically same update as 1.34 but now with the !cart command.
+
+1.36:
+
+Made the !price command work better with files and also a few other bug fixes
