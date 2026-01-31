@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.31
+tf2autobot-upgrade: 1.32
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -66,3 +66,8 @@ Bug with extractItem ALWAYS adding item= to the message fixed
 
 1.31:
 Fixed incorrect value handling when the bot is selling tickets/expanders for 0.5 keys each
+
+
+1.32:
+
+Fixed a couple of rounding errors
