@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.32
+tf2autobot-upgrade: 1.33
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -71,3 +71,7 @@ Fixed incorrect value handling when the bot is selling tickets/expanders for 0.5
 1.32:
 
 Fixed a couple of rounding errors
+
+1.33:
+
+Fixed another rounding error
