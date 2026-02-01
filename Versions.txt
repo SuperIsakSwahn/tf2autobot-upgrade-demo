@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.38
+tf2autobot-upgrade: 1.39
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -96,3 +96,7 @@ Also made it so crafting operations have to be for more than 0 operations.
 1.38:
 
 Clearer error messages
+
+1.39:
+
+Bug fix so if you type something like !w nc bp it properly becomes non-craftable backpack expander
