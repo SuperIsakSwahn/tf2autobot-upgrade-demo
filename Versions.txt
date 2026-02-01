@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.36
+tf2autobot-upgrade: 1.37
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -87,3 +87,8 @@ Basically same update as 1.34 but now with the !cart command.
 1.36:
 
 Made the !price command work better with files and also a few other bug fixes
+
+1.37:
+
+Fixed the !price command always resolving a file, also fixed "⏳ Crafting 0 Vaccinator(s)... 🔨" bug
+Also made it so crafting operations have to be for more than 0 operations.
