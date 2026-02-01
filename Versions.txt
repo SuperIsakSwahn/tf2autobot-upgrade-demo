@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.39
+tf2autobot-upgrade: 1.40
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -100,3 +100,7 @@ Clearer error messages
 1.39:
 
 Bug fix so if you type something like !w nc bp it properly becomes non-craftable backpack expander
+
+1.40:
+
+Added sniper and primary to bulk token crafting
