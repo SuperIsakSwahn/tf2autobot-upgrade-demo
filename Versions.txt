@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.42
+tf2autobot-upgrade: 1.43
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -112,3 +112,7 @@ Added a !pricecheckbulk command
 1.42:
 
 "❌ I could not find any items in my pricelist that contain "strange part: tankillstreak destroyed"" bug fix
+
+1.43:
+
+Added a readOnlyPricelist option, if enabled, the bot will never write to the pricelist file, it will only read it, load it into memory and make changes in there without writing them to the file, useful if multiple bots use one pricelist (one bot has the option disabled, all the other ones enable it)
