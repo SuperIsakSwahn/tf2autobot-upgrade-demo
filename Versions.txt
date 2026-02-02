@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.40
+tf2autobot-upgrade: 1.41
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -104,3 +104,7 @@ Bug fix so if you type something like !w nc bp it properly becomes non-craftable
 1.40:
 
 Added sniper and primary to bulk token crafting
+
+1.41:
+
+Added a !pricecheckbulk command
