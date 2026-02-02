@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.45
+tf2autobot-upgrade: 1.46
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -124,3 +124,7 @@ Added a autopricerMessages option, if disabled, the bot will never tell you abou
 1.45:
 
 Bug fix
+
+1.46:
+
+A lot of bug fixes
