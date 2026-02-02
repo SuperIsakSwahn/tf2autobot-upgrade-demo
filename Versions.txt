@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.44
+tf2autobot-upgrade: 1.45
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -120,3 +120,7 @@ Added a readOnlyPricelist option, if enabled, the bot will never write to the pr
 1.44:
 
 Added a autopricerMessages option, if disabled, the bot will never tell you about automatic price updates in the discord server.  
+
+1.45:
+
+Bug fix
