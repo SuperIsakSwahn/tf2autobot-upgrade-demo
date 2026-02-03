@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.48
+tf2autobot-upgrade: 1.49
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -136,3 +136,19 @@ A lot of bug fixes
 1.48:
 
 Made it so if autopricerMessages is disabled, the bot also doesn't send tf2 messages like someone receiving a golden pan.
+
+
+1.49:
+
+Removed this:
+
+        if (message.author === this.client.user) {
+            return; // don't talk to myself
+        }
+So now you can chat to your bot on discord if it's linked to your discord account
+
+Fixed "TypeError: Cannot read properties of undefined (reading 'includes')" fatal error
+
+Added a invalidIntentItems options, made to mimic invalidItems (or INVALID_ITEMS) very closely, so if someone tries to take an item with intent buy for example you can get it sent for review
+
+Huge bug fixes
