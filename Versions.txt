@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.47
+tf2autobot-upgrade: 1.48
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -132,3 +132,7 @@ A lot of bug fixes
 1.47:
 
 A lot of bug fixes
+
+1.48:
+
+Made it so if autopricerMessages is disabled, the bot also doesn't send tf2 messages like someone receiving a golden pan.
