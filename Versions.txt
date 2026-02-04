@@ -1,10 +1,33 @@
 tf2autobot-upgrade: 1.52
-tf2autobot-upgrade-demo: 1.5
+tf2autobot-upgrade-demo: 1.6
+
+Free version:
+
+1.6:
+Made it so only items with these skus get smelted:
+    '1101;6',
+    '133;6',
+    '1099;6',
+    '354;6',
+    '129;6',
+    '226;6',
+    '442;6',
+    '444;6',
+    '131;6',
+    '130;6',
+    '406;6',
+    '1150;6',
+    '528;6',
+    '140;6'
+Not stuff like vaccinators because they're valuable or heavy weapons because they're good for tokens, just secondary items for soldier, demoman (except sticky jumper) and engineer.
+
+Paid version:
+
+
 
 Changes:
 I don't really remember all the changes but I added more stuff to tokenGroups and I made it so for the premium version you can combine any tokens with &imsure.
 I set "alwaysDeclineNonTF2Items" to false by default, it was true by default
-
 Changes for 1.19:
 Added !ctbulk and !ctkbulk, they perform the good token operations with one command.
 
@@ -184,3 +207,4 @@ Made priority entries support numbers with decimals in them
 1.52:
 
 Cleaned file price messages a bit so when someone buys a file, it says for example "tf2autobot-upgrade - 0 keys, 0 ref / 40 keys (file)" it used to say "file:tf2autobot-upgrade - 0 keys, 0 ref / 40 keys (removed/not listed)"
+About the whitelist of items that get smelted that was mentioned in 1.50, it didn't work, I had to also update craftDuplicateWeapons now.
