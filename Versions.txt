@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.49
+tf2autobot-upgrade: 1.50
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -157,3 +157,20 @@ Huge bug fixes
 
 Fixed it so "Already attempting to log on, cannot log on again" doesn't make the bot crash
 Updated the ctkbulk command so it crafts pda2, spy, scout, pyro, heavy, melee, sniper, medic, engineer and primary tokens
+Added Sticky Jumper to the list of weapons that don't get smelted
+Made it so only items with these skus get smelted:
+    '1101;6',
+    '133;6',
+    '1099;6',
+    '354;6',
+    '129;6',
+    '226;6',
+    '442;6',
+    '444;6',
+    '131;6',
+    '130;6',
+    '406;6',
+    '1150;6',
+    '528;6',
+    '140;6'
+Not stuff like vaccinators because they're valuable or heavy weapons because they're good for tokens, just secondary items for soldier, demoman (except sticky jumper) and engineer.
