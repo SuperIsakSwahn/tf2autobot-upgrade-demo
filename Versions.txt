@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.50
+tf2autobot-upgrade: 1.51
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -174,3 +174,9 @@ Made it so only items with these skus get smelted:
     '528;6',
     '140;6'
 Not stuff like vaccinators because they're valuable or heavy weapons because they're good for tokens, just secondary items for soldier, demoman (except sticky jumper) and engineer.
+
+
+1.51:
+
+Fixed "Failed to update pricelist entry: "priority" must be greater than or equal to 0" bug
+Made priority entries support numbers with decimals in them
