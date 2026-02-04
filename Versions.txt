@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.51
+tf2autobot-upgrade: 1.52
 tf2autobot-upgrade-demo: 1.5
 
 Changes:
@@ -180,3 +180,7 @@ Not stuff like vaccinators because they're valuable or heavy weapons because the
 
 Fixed "Failed to update pricelist entry: "priority" must be greater than or equal to 0" bug
 Made priority entries support numbers with decimals in them
+
+1.52:
+
+Cleaned file price messages a bit so when someone buys a file, it says for example "tf2autobot-upgrade - 0 keys, 0 ref / 40 keys (file)" it used to say "file:tf2autobot-upgrade - 0 keys, 0 ref / 40 keys (removed/not listed)"
