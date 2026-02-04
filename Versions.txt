@@ -156,3 +156,4 @@ Huge bug fixes
 1.50:
 
 Fixed it so "Already attempting to log on, cannot log on again" doesn't make the bot crash
+Updated the ctkbulk command so it crafts pda2, spy, scout, pyro, heavy, melee, sniper, medic, engineer and primary tokens
