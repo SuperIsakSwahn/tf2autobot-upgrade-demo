@@ -152,3 +152,7 @@ Fixed "TypeError: Cannot read properties of undefined (reading 'includes')" fata
 Added a invalidIntentItems options, made to mimic invalidItems (or INVALID_ITEMS) very closely, so if someone tries to take an item with intent buy for example you can get it sent for review
 
 Huge bug fixes
+
+1.50:
+
+Fixed it so "Already attempting to log on, cannot log on again" doesn't make the bot crash
