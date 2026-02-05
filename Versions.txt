@@ -208,3 +208,7 @@ Made priority entries support numbers with decimals in them
 
 Cleaned file price messages a bit so when someone buys a file, it says for example "tf2autobot-upgrade - 0 keys, 0 ref / 40 keys (file)" it used to say "file:tf2autobot-upgrade - 0 keys, 0 ref / 40 keys (removed/not listed)"
 About the whitelist of items that get smelted that was mentioned in 1.50, it didn't work, I had to also update craftDuplicateWeapons now.
+
+1.53:
+
+Made aussie autocorrect to australium in commands
