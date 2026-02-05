@@ -1,5 +1,5 @@
-tf2autobot-upgrade: 1.52
-tf2autobot-upgrade-demo: 1.6
+tf2autobot-upgrade: 1.53
+tf2autobot-upgrade-demo: 1.7
 
 Free version:
 
@@ -20,6 +20,8 @@ Made it so only items with these skus get smelted:
     '528;6',
     '140;6'
 Not stuff like vaccinators because they're valuable or heavy weapons because they're good for tokens, just secondary items for soldier, demoman (except sticky jumper) and engineer.
+
+Fixed a fallback bug that wasn't excluding fabricators/kits when applying the fallback price
 
 Paid version:
 
@@ -212,3 +214,4 @@ About the whitelist of items that get smelted that was mentioned in 1.50, it did
 1.53:
 
 Made aussie autocorrect to australium in commands and fixed other autocorrect issues
+Fixed a fallback bug that wasn't excluding fabricators/kits when applying the fallback price
