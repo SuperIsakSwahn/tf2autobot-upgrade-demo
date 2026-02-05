@@ -23,6 +23,11 @@ Not stuff like vaccinators because they're valuable or heavy weapons because the
 
 Fixed a fallback bug that wasn't excluding fabricators/kits when applying the fallback price
 
+1.7:
+
+Fixed it so items that the bot can fetch using the autopricer if it's not in the pricelist can have fallbacks.
+
+
 Paid version:
 
 
@@ -215,3 +220,7 @@ About the whitelist of items that get smelted that was mentioned in 1.50, it did
 
 Made aussie autocorrect to australium in commands and fixed other autocorrect issues
 Fixed a fallback bug that wasn't excluding fabricators/kits when applying the fallback price
+
+1.54:
+
+Fixed it so items that the bot can fetch using the autopricer if it's not in the pricelist can have fallbacks.
