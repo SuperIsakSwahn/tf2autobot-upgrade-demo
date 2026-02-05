@@ -211,4 +211,4 @@ About the whitelist of items that get smelted that was mentioned in 1.50, it did
 
 1.53:
 
-Made aussie autocorrect to australium in commands
+Made aussie autocorrect to australium in commands and fixed other autocorrect issues
