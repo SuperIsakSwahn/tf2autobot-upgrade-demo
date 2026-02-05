@@ -42,7 +42,7 @@ import { sendAlert } from '../DiscordWebhook/export';
 import { summarize, uptime, getHighValueItems, testPriceKey } from '../../lib/tools/export';
 
 import genPaths from '../../resources/paths';
-import IPricer from '../IPricer edited';
+import IPricer from '../IPricer';
 import Options, { OfferType } from '../Options';
 import SteamTradeOfferManager from '@tf2autobot/tradeoffer-manager';
 import filterAxiosError from '@tf2autobot/filter-axios-error';
@@ -1207,9 +1207,10 @@ export default class MyHandler extends Handler {
                             console.log('This is quality: ', quality)
                             console.log("isFestivized is: ", isFestivized);
                             let isCosmetic = false;
-                            if (id.includes(';kt-1')) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
-                            else if (id.includes(';kt-2')) value += 180;
-                            else if (id.includes(';kt-3')) value += 360;
+                            const isKitOrFabricator = id.includes(';td-');
+                                 if (id.includes(';kt-1') && !isKitOrFabricator) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
+                            else if (id.includes(';kt-2') && !isKitOrFabricator) value += 180;
+                            else if (id.includes(';kt-3') && !isKitOrFabricator) value += 360;
                             if (isAustralium) value += Currencies.toScrap(sellKeyPrice.metal * 5);
                             if (isFestivized) {
                                 value += 45;
@@ -1342,9 +1343,10 @@ export default class MyHandler extends Handler {
                                 console.log('This is quality: ', quality)
                                 console.log("isFestivized is: ", isFestivized);
                                 let isCosmetic = false;
-                                if (sku.includes(';kt-1')) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
-                                else if (sku.includes(';kt-2')) value += 180;
-                                else if (sku.includes(';kt-3')) value += 360;
+                                const isKitOrFabricator = sku.includes(';td-');
+                                if (sku.includes(';kt-1') && !isKitOrFabricator) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
+                                else if (sku.includes(';kt-2') && !isKitOrFabricator) value += 180;
+                                else if (sku.includes(';kt-3') && !isKitOrFabricator) value += 360;
                                 if (isAustralium) value += Currencies.toScrap(sellKeyPrice.metal * 5);
                                 if (isFestivized) {
                                     value += 45;
@@ -1523,9 +1525,10 @@ export default class MyHandler extends Handler {
                                     else if (quality === 14) value += 20 * Currencies.toScrap(sellKeyPrice.metal);
                                     else if (quality === 15) value += 1/2
                                     let isCosmetic = false;
-                                    if (sku.includes(';kt-1')) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
-                                    else if (sku.includes(';kt-2')) value += 180;
-                                    else if (sku.includes(';kt-3')) value += 360;
+                                    const isKitOrFabricator = sku.includes(';td-');
+                                    if (sku.includes(';kt-1') && !isKitOrFabricator) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
+                                    else if (sku.includes(';kt-2') && !isKitOrFabricator) value += 180;
+                                    else if (sku.includes(';kt-3') && !isKitOrFabricator) value += 360;
                                     if (isAustralium) value += Currencies.toScrap(sellKeyPrice.metal * 5);
                                     if (isFestivized) {
                                         value += 45;
