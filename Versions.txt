@@ -255,3 +255,5 @@ APP
 https://pricedb.io/api/graph/30777;11
 
 Fixed so if you !check a number the bot doesn't crash
+
+Added an systemMessages option, before, autopricerMessages also targetted system messages but now systemMessages does instead.
