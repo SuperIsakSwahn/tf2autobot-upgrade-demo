@@ -224,3 +224,5 @@ Fixed a fallback bug that wasn't excluding fabricators/kits when applying the fa
 1.54:
 
 Fixed it so items that the bot can fetch using the autopricer if it's not in the pricelist can have fallbacks.
+Made it so the !stop command removes the listings
+Added priorityBuy to the pricelist so sell listings are sorted by priority and buy orders by priorityBuy
