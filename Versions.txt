@@ -45,6 +45,13 @@ APP
 • Sell : 29.33 ref
 https://pricedb.io/api/graph/30777;11
 
+1.10:
+
+Apparently I forgot to fill this in but I think it was a small update
+
+1.11:
+Added a autopricerMessages option, if disabled, the bot will never tell you about automatic price updates in the discord server.  
+Added an systemMessages option, if disabled, the bot will never send system messages in the discord server.  
 
 Paid version:
 
