@@ -1,5 +1,5 @@
 tf2autobot-upgrade: 1.53
-tf2autobot-upgrade-demo: 1.8
+tf2autobot-upgrade-demo: 1.9
 
 Free version:
 
@@ -26,6 +26,23 @@ Fixed a fallback bug that wasn't excluding fabricators/kits when applying the fa
 1.7:
 
 Fixed it so items that the bot can fetch using the autopricer if it's not in the pricelist can have fallbacks.
+
+1.8:
+I can't remember in detail but I made it so the code goes through the validator without any errors, it had a lot of bugs earlier and a user reported it not even launching.
+
+1.9:
+
+Fixed so if you !check a number the bot doesn't crash
+Fixed some other bugs
+Made it so if you use a custom pricer, pricesdb.io is used as a fallback if the price is missing in your local autopricer, example:
+!check Strange Lurking Legionnaire
+APP
+ — 6:40 PM
+⚠️ Pricer failed, using PriceDB fallback
+🔎 Strange Lurking Legionnaire:
+• Buy  : 25.55 ref
+• Sell : 29.33 ref
+https://pricedb.io/api/graph/30777;11
 
 
 Paid version:
@@ -235,3 +252,5 @@ APP
 • Buy  : 25.55 ref
 • Sell : 29.33 ref
 https://pricedb.io/api/graph/30777;11
+
+Fixed so if you !check a number the bot doesn't crash
