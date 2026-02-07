@@ -34,6 +34,7 @@ I can't remember in detail but I made it so the code goes through the validator 
 
 Fixed so if you !check a number the bot doesn't crash
 Fixed some other bugs
+Made it so !stop removes listings
 Made it so if you use a custom pricer, pricesdb.io is used as a fallback if the price is missing in your local autopricer, example:
 !check Strange Lurking Legionnaire
 APP
