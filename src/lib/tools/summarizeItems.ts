@@ -121,23 +121,8 @@ function listPrices(offer: TradeOffer, bot: Bot, isSteamChat: boolean): string {
             continue;
         }
 
-        let rawBuy = prices[priceKey].buy;
-        let rawSell = prices[priceKey].sell;
-
-        if (typeof rawBuy !== 'object') {
-            rawBuy = { keys: 0, metal: Number(rawBuy) || 0 };
-        }
-        if (typeof rawSell !== 'object') {
-            rawSell = { keys: 0, metal: Number(rawSell) || 0 };
-        }
-
-        buyPrice = new Currencies(rawBuy).toString();
-        sellPrice = new Currencies(rawSell).toString();
-
-
         buyPrice = new Currencies(prices[priceKey].buy).toString();
         sellPrice = new Currencies(prices[priceKey].sell).toString();
-
 
         const entry = bot.pricelist.getPriceBySkuOrAsset({ priceKey, onlyEnabled: false });
 
@@ -160,8 +145,8 @@ function listPrices(offer: TradeOffer, bot: Bot, isSteamChat: boolean): string {
 
     if (toJoin.length > 0) {
         text = isSteamChat
-            ? '📜_ITEMS_PRICES\n- ' + toJoin.join(',\n- ')
-            : '📜`_ITEMS_PRICES`\n- ' + toJoin.join(',@\n- ');
+            ? '📜 Item prices\n- ' + toJoin.join(',\n- ')
+            : '📜 **Item prices**\n- ' + toJoin.join(',@\n- ');
     }
 
     return text;

@@ -16,8 +16,6 @@ export default function loadPollData(dir: string) {
         })
         .sort((a, b) => a.mtime - b.mtime)
         .forEach(e => {
-            console.log('Reading file', e.name); // <-- log here
-
             const data = JSON.parse(
                 fs.readFileSync(dir + e.name, { encoding: 'utf8' })
             ) as SteamTradeOfferManager.PollData;

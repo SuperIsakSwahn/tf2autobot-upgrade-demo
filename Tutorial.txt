@@ -1,0 +1,5 @@
+Assuming you already have tf2autobot setup, drag the src folder in there, replace all files that this will, then build your bot's dist folder (such as the tsc command)
+There are shortcuts to items
+If you type !w 1 then you withdraw all vaccinators and quick-fixes for example, check Commands.ts for more details (tokenGroups)
+Basic killstreak weapons fallback to 6 ref, vaccinators 1 ref, festivized items 5 ref etc, check MyHandler for exact lists.
+Don't remove the file without an extension that is just a number in the files\botname\ folder, it represents how many festivizers it bought.

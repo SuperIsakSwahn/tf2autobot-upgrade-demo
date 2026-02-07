@@ -17,37 +17,39 @@ export function getItemAndAmount(
     bot: Bot,
     prefix: string,
     from?: 'buy' | 'sell' | 'buycart' | 'sellcart'
-): { match: Entry; priceKey: string; amount: number } | null {const parsedMessage = parseItemAndAmountFromMessage(message);
-    let name = parsedMessage.name.trim();
+): { match: Entry; priceKey: string; amount: number } | null {
+    const parsedMessage = parseItemAndAmountFromMessage(message);
+    const name = parsedMessage.name;
     let amount = parsedMessage.amount;
 
-    const commands = ['!price', '!sellcart', '!buycart', '!sell', '!buy', '!pc', '!s', '!b'];
-
-// --- Handle blank / command-only / number-only cases first ---
-    if (name === '' || commands.includes(name)) {
-        amount = parsedMessage.amount || amount;
-        name = 'Mann Co. Supply Crate Key';
-    } else if (/^\d+$/.test(name)) {
-        amount = parseInt(name, 10);
-        name = 'Mann Co. Supply Crate Key';
+    if (['!price', '!sellcart', '!buycart', '!sell', '!buy', '!pc', '!s', '!b'].includes(name)) {
+        bot.sendMessage(
+            steamID,
+            '⚠️ You forgot to add a name. Here\'s an example: "' +
+            (name.includes('!price')
+                ? '!price'
+                : name.includes('!sellcart')
+                    ? '!sellcart'
+                    : name.includes('!buycart')
+                        ? '!buycart'
+                        : name.includes('!sell')
+                            ? '!sell'
+                            : name.includes('!buy')
+                                ? '!buy'
+                                : name.includes('!pc')
+                                    ? '!pc'
+                                    : name.includes('!s')
+                                        ? '!s'
+                                        : '!b') +
+            ' Team Captain"'
+        );
+        return null;
     }
-
-// --- Always normalize craftability shorthands first ---
-    name = name.replace(/^(uncraft|uncraftable|non[ -]?craftable|nc)\b/i, 'Non-Craftable').trim();
-
-// --- Special case: "key"/"keys" shortcut ---
-    if (/^keys?$/i.test(name)) {
-        name = 'Mann Co. Supply Crate Key';
-    }
-
-
 
     let priceKey: string;
     let match = testPriceKey(name)
         ? bot.pricelist.getPriceBySkuOrAsset({ priceKey: name, onlyEnabled: true })
         : bot.pricelist.searchByName(name, true);
-
-    // If direct match was found, perform the same 'from' checks as original code
     if (match !== null && match instanceof Entry && typeof from !== 'undefined') {
         const opt = bot.options.commands;
 
@@ -57,6 +59,7 @@ export function getItemAndAmount(
                 steamID,
                 custom ? custom.replace(/%itemName%/g, match.name) : `❌ ${from} command is disabled for ${match.name}.`
             );
+
             return null;
         }
 
@@ -68,135 +71,6 @@ export function getItemAndAmount(
         }
     }
 
-    // --- Sequential fallbacks (one at a time). Try each, re-searching after each transform. ---
-    if (match === null) {
-        const trySearch = (candidateName: string): Entry | Entry[] | null => {
-            return testPriceKey(candidateName)
-                ? bot.pricelist.getPriceBySkuOrAsset({ priceKey: candidateName, onlyEnabled: true })
-                : bot.pricelist.searchByName(candidateName, true);
-        };
-
-        // Keep original name untouched for each check (we only commit when a fallback finds a match)
-
-        // Fallback 1: leading uncraftable / non craftable / nc -> Non-Craftable
-        if (/^(uncraftable|non[ -]?craftable|nc)\b/i.test(name)) {
-            const candidate = name.replace(/^(uncraftable|non[ -]?craftable|nc)\b/i, 'Non-Craftable').trim();
-            const retry = trySearch(candidate);
-            if (retry !== null && !(Array.isArray(retry))) {
-                // check 'from' restrictions
-                if (typeof from !== 'undefined') {
-                    const opt = bot.options.commands;
-                    if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
-                        const custom = opt[from].customReply.disabledForSKU;
-                        bot.sendMessage(
-                            steamID,
-                            custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
-                        );
-                        return null;
-                    }
-                }
-                match = retry;
-                name = candidate;
-                priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
-            }
-        }
-
-        // Fallback 2: tod -> Tour of Duty Ticket
-        if (match === null && /\btod\b/i.test(name)) {
-            const candidate = name.replace(/\btod\b/i, 'Tour of Duty Ticket').trim();
-            const retry = trySearch(candidate);
-            if (retry !== null && !(Array.isArray(retry))) {
-                if (typeof from !== 'undefined') {
-                    const opt = bot.options.commands;
-                    if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
-                        const custom = opt[from].customReply.disabledForSKU;
-                        bot.sendMessage(
-                            steamID,
-                            custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
-                        );
-                        return null;
-                    }
-                }
-                match = retry;
-                name = candidate;
-                priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
-            }
-        }
-
-        // Fallback 3: key / keys -> Mann Co. Supply Crate Key
-        if (match === null && /\bkeys?\b/i.test(name)) {
-            const candidate = name.replace(/\bkeys?\b/i, 'Mann Co. Supply Crate Key').trim();
-            const retry = trySearch(candidate);
-            if (retry !== null && !(Array.isArray(retry))) {
-                if (typeof from !== 'undefined') {
-                    const opt = bot.options.commands;
-                    if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
-                        const custom = opt[from].customReply.disabledForSKU;
-                        bot.sendMessage(
-                            steamID,
-                            custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
-                        );
-                        return null;
-                    }
-                }
-                match = retry;
-                name = candidate;
-                priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
-            }
-        }
-
-        // Fallback 4: bp -> Backpack Expander
-        if (match === null && /\bbp\b/i.test(name)) {
-            const candidate = name.replace(/\bbp\b/i, 'Backpack Expander').trim();
-            const retry = trySearch(candidate);
-            if (retry !== null && !(Array.isArray(retry))) {
-                if (typeof from !== 'undefined') {
-                    const opt = bot.options.commands;
-                    if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
-                        const custom = opt[from].customReply.disabledForSKU;
-                        bot.sendMessage(
-                            steamID,
-                            custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
-                        );
-                        return null;
-                    }
-                }
-                match = retry;
-                name = candidate;
-                priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
-            }
-        }
-
-        // Fallback 5: trailing number as amount (only if previous attempts failed)
-        if (match === null) {
-            const parts = name.split(' ').filter(Boolean);
-            const last = parts[parts.length - 1];
-            if (/^\d+$/.test(last) && parts.length > 1) {
-                const possibleAmount = parseInt(last, 10);
-                const candidate = parts.slice(0, -1).join(' ').trim();
-                const retry = trySearch(candidate);
-                if (retry !== null && !(Array.isArray(retry))) {
-                    if (typeof from !== 'undefined') {
-                        const opt = bot.options.commands;
-                        if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
-                            const custom = opt[from].customReply.disabledForSKU;
-                            bot.sendMessage(
-                                steamID,
-                                custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
-                            );
-                            return null;
-                        }
-                    }
-                    match = retry;
-                    name = candidate;
-                    amount = possibleAmount;
-                    priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
-                }
-            }
-        }
-    }
-
-    // --- If still not found, run original fuzzy/unusual match logic (unchanged) ---
     if (match === null) {
         // Search the item by Levenshtein distance to find a close match (if one exists)
         let lowestDistance = 999;
@@ -215,7 +89,8 @@ export function getItemAndAmount(
             if (pricedItem.name === null) {
                 // This looks impossible, but can occur I guess.
                 // https://github.com/TF2Autobot/tf2autobot/issues/882
-                bot.sendMessage(steamID, `❌ Something went wrong. It's likely the bot failed to find the item name you wrote.`);
+
+                bot.sendMessage(steamID, `❌ Something went wrong. Please try again.`);
                 return null;
             }
 
@@ -228,9 +103,9 @@ export function getItemAndAmount(
                 // genericNameAndMatch detected that the hat did start with an unusual effect
                 // so we will check to see if a generic SKU is found
                 if (genericEffect.effect) {
-                    const itemDistance2 = levenshtein(pricedItem.name, genericEffect.name);
-                    if (itemDistance2 < lowestUnusualDistance) {
-                        lowestUnusualDistance = itemDistance2;
+                    const itemDistance = levenshtein(pricedItem.name, genericEffect.name);
+                    if (itemDistance < lowestUnusualDistance) {
+                        lowestUnusualDistance = itemDistance;
                         closestUnusualMatch = pricedItem;
                     }
                 }
@@ -258,6 +133,7 @@ export function getItemAndAmount(
 
         if (closestMatch === null) {
             bot.sendMessage(steamID, notFound(name, prefix));
+
             return null;
         }
 
@@ -295,10 +171,10 @@ export function getItemAndAmount(
             };
         } else {
             bot.sendMessage(steamID, notFound(name, prefix));
+
             return null;
         }
     } else if (Array.isArray(match)) {
-        // multiple match handling (unchanged)
         const matchCount = match.length;
 
         if (matchCount > 20) {
@@ -316,7 +192,7 @@ export function getItemAndAmount(
     }
 
     return {
-        amount: amount || 1,
+        amount: amount,
         priceKey: priceKey,
         match: match
     };

@@ -5,11 +5,11 @@ import Currencies from '@tf2autobot/tf2-currencies';
 import dayjs from 'dayjs';
 
 import * as c from './sub-classes/export';
-import { removeLinkProtocol, getItemFromParams, getItemAndAmount } from './functions/utils';
+import {getItemAndAmount, getItemFromParams, removeLinkProtocol} from './functions/utils';
 
 import Bot from '../Bot';
 import CommandParser from '../CommandParser';
-import Inventory, { getSkuAmountCanTrade } from '../Inventory';
+import Inventory, {getSkuAmountCanTrade} from '../Inventory';
 import Cart from '../Carts/Cart';
 import AdminCart from '../Carts/AdminCart';
 import UserCart from '../Carts/UserCart';
@@ -17,18 +17,17 @@ import DonateCart from '../Carts/DonateCart';
 import PremiumCart from '../Carts/PremiumCart';
 import CartQueue from '../Carts/CartQueue';
 import IPricer from '../IPricer';
-import { fixItem } from '../../lib/items';
-import { UnknownDictionary } from '../../types/common';
+import {fixItem} from '../../lib/items';
+import {UnknownDictionary} from '../../types/common';
 import log from '../../lib/logger';
-import { testPriceKey } from '../../lib/tools/export';
-import { apiRequest } from '../../lib/apiRequest';
+import {testPriceKey} from '../../lib/tools/export';
+import {apiRequest} from '../../lib/apiRequest';
 // @ts-ignore
-// import virtualPricelist from '../../files/pricelist-steam.json'; // TS2732: Cannot find module '../../files/pricelist-steam.json'. Consider using '--resolveJsonModule' to import module with '.json' extension.
 
 
 type Instant = 'buy' | 'b' | 'sell' | 's'; // Almost at the top of the file
 type CraftUncraft = 'craftweapon' | 'uncraftweapon';
-type Misc = 'time' | 'uptime' | 'pure' | 'rate' | 'owner' | 'discord' | 'stock' | 'stockcraft';
+type Misc = 'time' | 'uptime' | 'pure' | 'rate' | 'owner' | 'discord' | 'stock';
 type BlockUnblock = 'block' | 'unblock';
 type NameAvatar = 'name' | 'avatar';
 type TF2GC = 'expand' | 'use' | 'delete';
@@ -144,6 +143,16 @@ export default class Commands {
                     return this.bot.sendMessage(steamID, '❌ Command not available.');
                 }
                 this.checkoutCommand(steamID, prefix);
+            } else if (command === 'pricedbgroup' && isAdmin) {
+                void this.misc.pricedbGroup(steamID);
+            } else if (command === 'pricedbinvite' && isAdmin) {
+                void this.misc.pricedbInvite(steamID, CommandParser.removeCommand(message));
+            } else if (command === 'pricedbinvites' && isAdmin) {
+                void this.misc.pricedbInvites(steamID);
+            } else if (command === 'pricedbaccept' && isAdmin) {
+                void this.misc.pricedbAccept(steamID, CommandParser.removeCommand(message));
+            } else if (command === 'pricedbleave' && isAdmin) {
+                void this.misc.pricedbLeave(steamID, CommandParser.removeCommand(message));
             } else if (command === 'cancel') {
                 if (isInvalidType) {
                     return this.bot.sendMessage(steamID, '❌ Command not available.');
@@ -154,16 +163,16 @@ export default class Commands {
                     return this.bot.sendMessage(steamID, '❌ Command not available.');
                 }
                 this.queueCommand(steamID);
-            } else if (['time', 'uptime', 'pure', 'rate', 'owner', 'discord', 'stock', 'stockcraft'].includes(command)) {
+            } else if (['time', 'uptime', 'pure', 'rate', 'owner', 'discord', 'stock'].includes(command)) {
                 if (command === 'stock') {
                     return this.misc.miscCommand(steamID, command as Misc, message);
                 }
-                this.misc.miscCommand(steamID, command as Misc); // stockcraft will call this
+                this.misc.miscCommand(steamID, command as Misc);
             } else if (['link', 'links'].includes(command)) {
                 this.misc.links(steamID);
             } else if (command === 'sku') {
                 this.getSKU(steamID, message);
-            } else if (command === 'message') {
+            } else if (['msg', 'message'].includes(command)) {
                 if (isInvalidType) {
                     return this.bot.sendMessage(steamID, '❌ Command not available.');
                 }
@@ -180,8 +189,8 @@ export default class Commands {
                     command === 'craftweapons'
                         ? 'craftweapon'
                         : command === 'uncraftweapons'
-                        ? 'uncraftweapon'
-                        : (command as CraftUncraft)
+                            ? 'uncraftweapon'
+                            : (command as CraftUncraft)
                 );
             } else if (['deposit', 'd'].includes(command) && isAdmin) {
                 void this.depositCommand(steamID, message, prefix);
@@ -214,9 +223,9 @@ export default class Commands {
                 this.withdrawMetalCommand(steamID, message, prefix);
             } else if (['withdrawpure', 'wpure'].includes(command) && isAdmin) { // added just now
                 this.withdrawPureCommand(steamID, message, prefix);
-            } else if (['withdrawitems', 'witems'].includes(command) && isAdmin) { // added just now
+            } /*else if (['withdrawitems', 'witems'].includes(command) && isAdmin) { // added just now
                 this.withdrawItemsCommand(steamID, message, prefix);
-            } else if (command === 'withdrawmptf' && isAdmin) {
+            } */else if (command === 'withdrawmptf' && isAdmin) {
                 void this.withdrawMptfCommand(steamID, message);
             } else if (['withdrawall', 'wall'].includes(command) && isAdmin) { // added just now
                 void this.withdrawAllCommand(steamID, message);
@@ -226,12 +235,10 @@ export default class Commands {
                 void this.withdrawAllExceptCurrencyCommand(steamID, message);
             } else if (command === 'sort' && isAdmin) { // added just now
                 this.bot.sendMessage(steamID, 'Sending sort request..');
-                await this.bot.tf2gc.handleSortJob({"type":"sort","sortType":3}, steamID);
+                await this.bot.tf2gc.handleSortJob({"type":"sort","sortType":3}, steamID.toString());
             } else if (['add', 'a'].includes(command) && isAdmin) {
                 await this.pManager.addCommand(steamID, message);
-            } else if (command === 'addfile' && isAdmin) {
-                await this.pManager.addFile(steamID, message);
-            } else if (command === 'addbulk' && isAdmin) {
+            } else if (['addbulk', 'abulk'].includes(command) && isAdmin) {
                 void this.pManager.addbulkCommand(steamID, message);
             } else if (['u', 'update'].includes(command) && isAdmin) {
                 void this.pManager.updateCommand(steamID, message, prefix);
@@ -289,7 +296,7 @@ export default class Commands {
                 void this.status.itemStatsCommand(steamID, message);
             } else if (command == 'wipestats' && isAdmin) {
                 this.status.statsWipeCommand(steamID, message);
-            } else if (command === 'inventory') {
+            } else if (['inventory','inv'].includes(command)) {
                 this.status.inventoryCommand(steamID);
             } else if (command === 'version' && (isAdmin || isWhitelisted)) {
                 this.status.versionCommand(steamID);
@@ -303,9 +310,9 @@ export default class Commands {
                 void this.review.forceAction(steamID, message, command as ForceAction);
             } else if (command === 'offerinfo' && isAdmin) {
                 this.review.offerInfo(steamID, message, prefix);
-            } else if (command === 'pricecheck' && isAdmin) {
+            } else if (['pricecheck', 'pc'].includes(command) && isAdmin) {
                 this.request.pricecheckCommand(steamID, message);
-            } else if (command === 'pricecheckall' && isAdmin) {
+            } else if (['pricecheckall', 'pcall'].includes(command) && isAdmin) {
                 void this.request.pricecheckAllCommand(steamID);
             } else if (command === 'check' && isAdmin) {
                 void this.request.checkCommand(steamID, message);
@@ -331,15 +338,6 @@ export default class Commands {
                 this.manager.refreshSchema(steamID);
             } else if (['crafttoken', 'ct'].includes(command) && isAdmin) {
                 this.crafting.craftTokenCommand(steamID, message);
-            } else if (['smeltuselessweapons', 'craftuselessweapons', 'smeltuseless', 'craftuseless', 'su', 'cu'].includes(command) && isAdmin) {
-                return this.bot.sendMessage(
-                    steamID,
-                    `⚠️ Are you sure that you want to run this operation? If you missed the help command, it's unlikely that high-value items such as spelled ones will be excluded.
-                       If you are sure you want to run this operation, run the command again with &imsure at the end.`
-                );
-                // getHighValueItems could help
-            } else if (['smeltuselessweapons&imsure', 'craftuselessweapons&imsure', 'smeltuseless&imsure', 'craftuseless&imsure', 'su&imsure', 'cu&imsure'].includes(command) && isAdmin) {
-                this.crafting.smeltUselessWeaponCommand(steamID);
             } else {
                 const custom = this.bot.options.customMessage.commandNotFound;
 
@@ -396,6 +394,11 @@ export default class Commands {
         }
     }
     tokenGroups = {
+        nicekeys: [
+            '5777;6',
+            '5659;6',
+            '5638;6 '
+        ],
         metal: [
             '5000;6',
             '5001;6',
@@ -410,6 +413,12 @@ export default class Commands {
         1: [
             '411;6',
             '998;6'
+        ],
+        tods: [
+            '5050;6',
+            '725;6',
+            '5050;6;uncraftable',
+            '725;6;uncraftable'
         ],
         uselessweapons: [
             '1101;6',
@@ -426,7 +435,6 @@ export default class Commands {
             '1150;6',
             '528;6',
             '140;6',
-            '35;6'
         ],
         uw: [
             '1101;6',
@@ -460,6 +468,23 @@ export default class Commands {
             '5013;6', // Slot Token - Secondary
             '5014;6', // Slot Token - Melee
             '5018;6'  // Slot Token - PDA2
+        ],
+        goodtokens: [
+            '5003;6', // Class Token - Scout
+            '5009;6', // Class Token - Pyro
+            '5007;6', // Class Token - Heavy
+            '5010;6', // Class Token - Spy
+            '5014;6', // Slot Token - Melee
+            '5018;6'  // Slot Token - PDA2
+        ],
+        badtokens: [
+            '5005;6', // Class Token - Soldier
+            '5006;6', // Class Token - Demoman
+            '5011;6', // Class Token - Engineer
+            '5008;6', // Class Token - Medic
+            '5004;6', // Class Token - Sniper
+            '5012;6', // Slot Token - Primary
+            '5013;6', // Slot Token - Secondary
         ],
         // Grouped keywords (used for !w tokens)
         slot: [
@@ -579,7 +604,6 @@ export default class Commands {
             '653;6',
             '654;6',
             '655;6',
-            '656;6',
             '657;6',
             '658;6',
             '753;6',
@@ -612,6 +636,33 @@ export default class Commands {
             '781;6',
             '782;6'
         ],
+        hats3: [
+            '30757;6',
+            '30332;6',
+            '1023;6',
+            '30429;6',
+            '30430;6',
+            '30431;6',
+            '31346;6',
+            '30908;6',
+            '31434;6',
+            '380;6',
+            '30031;6',
+            '30021;6',
+            '30099;6',
+            '345;6',
+            '30019;6',
+            '30557;6',
+            '30309;6',
+            '30377;6',
+            '30064;6',
+            '31512;6',
+            '31500;6',
+            '30024;6',
+            '30040;6',
+            '454;6',
+            '393;6'
+        ],
         hats5: [
             '783;6',
             '784;6',
@@ -636,7 +687,6 @@ export default class Commands {
             '944;6',
             '945;6',
             '946;6',
-            '947;6',
             '948;6',
             '949;6',
             '950;6',
@@ -669,7 +719,6 @@ export default class Commands {
             '1089;6',
             '1090;6',
             '1091;6',
-            '1092;6',
             '1093;6',
             '1094;6',
             '1095;6',
@@ -788,12 +837,6 @@ export default class Commands {
         scrap: [
             '5000;6'
         ],
-        tods: [
-            '5050;6',
-            '725;6',
-            '5050;6;uncraftable',
-            '725;6;uncraftable',
-        ],
         valuable: [
             '237;6',
             '452;6',
@@ -848,7 +891,108 @@ export default class Commands {
             '947;6;uncraftable',
             '474;6;uncraftable',
             '1013;6;uncraftable',
+            '880;6;uncraftable',
+            '939;6;uncraftable',
             '572;6;uncraftable',
+        ],
+        randomkeys: [
+            '5777;6;uncraftable',
+            '5659;6;uncraftable',
+            '5638;6;uncraftable'
+        ],
+        loadout: [
+            '30637;6',
+            '30889;6',
+            '30479;6',
+            '126;6',
+            '31450;6',
+            '30339;6',
+            '976;6',
+            '31498;6',
+            '31464;6',
+            '342;6',
+            '342;6;p12073019',
+            '874;6',
+            '30061;6',
+            '31368;6',
+            '31346;6',
+            '31370;6',
+            '94;6',
+            '94;6;p6901050',
+            '31264;6',
+            '755;6',
+            '30311;6',
+            '30397;6',
+            '31504;6',
+            '981;6',
+            '30310;6',
+            '55;6',
+            '462;6',
+            '977;7',
+            '5617;6',
+            '5617;13',
+            '5618;6',
+            '5618;13',
+            '5619;6',
+            '5619;13',
+            '5619;6',
+            '5619;13',
+            '5620;6',
+            '5620;13',
+            '5621;6',
+            '5621;13',
+            '5622;6',
+            '5622;13',
+            '5623;6',
+            '5623;13',
+            '5624;6',
+            '5624;13',
+            '5626;6',
+            '5626;13',
+            '30243;13',
+            '30243;6',
+            '278;6',
+            '278;11',
+            '266;5',
+            '266;5;strange',
+            '30407;6',
+            '30408;6',
+            '30409;6'
+        ],
+        christmas: [
+            '652;6',
+            '30325;6',
+            '653;6',
+            '666;6',
+            '647;6',
+            '30747;6;p15132390',
+            '30835;6',
+            '987;6',
+            '30826;6',
+            '30541;6',
+            '30408;6',
+            '978;6',
+            '645;6',
+            '879;6',
+            '30975;6'
+        ],
+        robot: [
+            '5700;6',
+            '5701;6',
+            '5702;6',
+            '5703;6',
+            '5704;6',
+            '5705;6',
+            '5706;6',
+            '5707;6'
+        ],
+
+        tools: [
+            '5044;6',
+            '729;6',
+            '5020;6',
+            '729;6;uncraftable',
+            '5020;6;uncraftable',
         ]
     };
 
@@ -875,7 +1019,7 @@ export default class Commands {
         const isBuying = match.intent === 0 || match.intent === 2;
         const isSelling = match.intent === 1 || match.intent === 2;
 
-        const sellKeyPrice = this.bot.pricelist.getKeyPrices['sell'];
+        const keyPrice = this.bot.pricelist.getKeyPrice;
 
         if (isBuying) {
             reply = '💲 I am buying ';
@@ -886,11 +1030,11 @@ export default class Commands {
 
             // If the amount is 1, then don't convert to value and then to currencies. If it is for keys, then don't use conversion rate
             reply += `${pluralize(match.name, 2)} for ${(amount === 1
-                ? match.buy
-                : Currencies.toCurrencies(
-                      match.buy.toValue(sellKeyPrice.metal) * amount,
-                      match.sku === '5021;6' ? undefined : sellKeyPrice.metal
-                  )
+                    ? match.buy
+                    : Currencies.toCurrencies(
+                        match.buy.toValue(keyPrice.metal) * amount,
+                        match.sku === '5021;6' ? undefined : keyPrice.metal
+                    )
             ).toString()}`;
         }
 
@@ -899,9 +1043,9 @@ export default class Commands {
                 amount === 1
                     ? match.sell
                     : Currencies.toCurrencies(
-                          match.sell.toValue(sellKeyPrice.metal) * amount,
-                          match.sku === '5021;6' ? undefined : sellKeyPrice.metal
-                      );
+                        match.sell.toValue(keyPrice.metal) * amount,
+                        match.sku === '5021;6' ? undefined : keyPrice.metal
+                    );
 
             if (reply === '') {
                 reply = '💲 I am selling ';
@@ -943,63 +1087,23 @@ export default class Commands {
 
         this.bot.sendMessage(steamID, reply);
     }
-    private buyOrSellCommand(steamID: SteamID, message: string, command: Instant, prefix: string): void {
+
+    // Instant item trade
+
+
+    private buyOrSellCommand(steamID: SteamID, message: string, command: Instant, prefix: string, ecp = false): void {
         const opt = this.bot.options.commands[command === 'b' ? 'buy' : command === 's' ? 'sell' : command];
 
-        if (!opt.enable && !this.bot.isAdmin(steamID)) {
-            const custom = opt.customReply.disabled;
-            return this.bot.sendMessage(steamID, custom ? custom : '❌ This command is disabled by the owner.');
+        if (!opt.enable) {
+            if (!this.bot.isAdmin(steamID)) {
+                const custom = opt.customReply.disabled;
+                return this.bot.sendMessage(steamID, custom ? custom : '❌ This command is disabled by the owner.');
+            }
         }
 
-        const arg = CommandParser.removeCommand(message).trim().toLowerCase();
-
-        const cart = new UserCart(
-            steamID,
-            this.bot,
-            this.weaponsAsCurrency.enable ? this.bot.craftWeapons : [],
-            this.weaponsAsCurrency.enable && this.weaponsAsCurrency.withUncraft ? this.bot.uncraftWeapons : []
-        );
-
-        cart.setNotify = true;
-
-        // Handle `!buy all` or `!sell all`
-        if (arg === 'all') {
-            const pricelist = this.bot.pricelist.getPrices;
-
-            for (const sku in pricelist) {
-                const entry = pricelist[sku];
-
-                const canBuy = entry.enabled && entry.intent !== 1; // Not selling-only
-                const canSell = entry.enabled && entry.intent !== 0; // Not buying-only
-                //const canBuy = true;
-                //const canSell = true;
-
-                if (['b', 'buy'].includes(command) && canBuy) {
-                    const amount = this.bot.inventoryManager.getInventory.getAmount(sku, true);
-                    if (amount > 0) {
-                        cart.addOurItem(sku, amount);
-                    }
-
-                } else if (['s', 'sell'].includes(command) && canSell) {
-                    const amount = this.bot.inventoryManager.getInventory.getAmount(sku, true);
-                    if (amount > 0) {
-                        cart.addTheirItem(sku, amount);
-                    }
-                }
-            }
-
-            if (cart.getTotalItems === 0) {
-                log.warn(steamID, '❌ No items to add for this operation.');
-                return this.bot.sendMessage(steamID, '❌ No items to add for this operation.');
-            }
-
-            return this.addCartToQueue(cart, false, false);
-        }
-
-        // Normal case for single item
         const info = getItemAndAmount(
             steamID,
-            arg,
+            ecp ? message : CommandParser.removeCommand(message),
             this.bot,
             prefix,
             command === 'b' ? 'buy' : command === 's' ? 'sell' : command
@@ -1009,19 +1113,22 @@ export default class Commands {
             return;
         }
 
+        const cart = new UserCart(
+            steamID,
+            this.bot,
+            this.weaponsAsCurrency.enable ? this.bot.craftWeapons : [],
+            this.weaponsAsCurrency.enable && this.weaponsAsCurrency.withUncraft ? this.bot.uncraftWeapons : []
+        );
+
+        cart.setNotify = true;
         if (['b', 'buy'].includes(command)) {
             cart.addOurItem(info.priceKey, info.amount);
         } else {
             cart.addTheirItem(info.match.sku, info.amount);
         }
 
-        return this.addCartToQueue(cart, false, false);
+        this.addCartToQueue(cart, false, false);
     }
-
-    // Instant item trade
-
-
-    // Multiple items trade
 
     private buyCartCommand(steamID: SteamID, message: string, prefix: string): void {
         const currentCart = Cart.getCart(steamID);
@@ -1041,103 +1148,69 @@ export default class Commands {
                 return this.bot.sendMessage(steamID, custom ? custom : '❌ This command is disabled by the owner.');
             }
         }
-        const arg = CommandParser.removeCommand(message).trim().toLowerCase();
-        const fileData = this.bot.steampricelist.findFileByFilename(arg);
-        if (fileData) {
-            // Reuse the user's existing cart if present, otherwise create one
-            const cart =
-                (Cart.getCart(steamID) as UserCart | null) ||
-                new UserCart(
-                    steamID,
-                    this.bot,
-                    this.weaponsAsCurrency.enable ? this.bot.craftWeapons : [],
-                    this.weaponsAsCurrency.enable && this.weaponsAsCurrency.withUncraft ? this.bot.uncraftWeapons : []
-                );
 
-            cart.setNotify = true;
+        const info = getItemAndAmount(steamID, CommandParser.removeCommand(message), this.bot, prefix, 'buycart');
 
-            // Fake SKU to track this as a logical trade unit
-            const filename = `file:${arg}`;
+        if (info === null) {
+            return;
+        }
 
-            // Add one copy of the file to the cart (we never expect >1)
-            cart.addOurItem(filename, 1);
+        let amount = info.amount;
+        const cart =
+            Cart.getCart(steamID) ||
+            new UserCart(
+                steamID,
+                this.bot,
+                this.weaponsAsCurrency.enable ? this.bot.craftWeapons : [],
+                this.weaponsAsCurrency.enable && this.weaponsAsCurrency.withUncraft ? this.bot.uncraftWeapons : []
+            );
 
-            // Add or update the cart in the global cart store
-            Cart.addCart(cart);
+        const cartAmount = cart.getOurCount(info.priceKey);
+        const ourAmount = this.bot.inventoryManager.getInventory.getAmount({
+            priceKey: info.priceKey,
+            includeNonNormalized: false,
+            tradableOnly: true
+        });
+        const amountCanTrade =
+            this.bot.inventoryManager.amountCanTrade({ priceKey: info.priceKey, tradeIntent: 'selling' }) - cartAmount;
 
-            // Inform the user (keep the existing message idea)
+        const name = info.match.name;
+
+        // Correct trade if needed
+        if (amountCanTrade <= 0) {
             return this.bot.sendMessage(
                 steamID,
-                `You have added a file to the cart. If you accept the trade but don't receive the file, contact the owner immediately.`
+                'I ' +
+                (ourAmount > 0 ? "can't sell" : "don't have") +
+                ` any ${(cartAmount > 0 ? 'more ' : '') + pluralize(name, 0)}.`
             );
-        } else {
+        }
 
-            const info = getItemAndAmount(steamID, CommandParser.removeCommand(message), this.bot, prefix, 'buycart');
+        if (amount > amountCanTrade) {
+            amount = amountCanTrade;
 
-            if (info === null) {
-                return;
-            }
-
-            let amount = info.amount;
-            const cart =
-                Cart.getCart(steamID) ||
-                new UserCart(
-                    steamID,
-                    this.bot,
-                    this.weaponsAsCurrency.enable ? this.bot.craftWeapons : [],
-                    this.weaponsAsCurrency.enable && this.weaponsAsCurrency.withUncraft ? this.bot.uncraftWeapons : []
-                );
-
-            const cartAmount = cart.getOurCount(info.priceKey);
-            const ourAmount = this.bot.inventoryManager.getInventory.getAmount({
-                priceKey: info.priceKey,
-                includeNonNormalized: false,
-                tradableOnly: true
-            });
-            const amountCanTrade =
-                this.bot.inventoryManager.amountCanTrade({
-                    priceKey: info.priceKey,
-                    tradeIntent: 'selling'
-                }) - cartAmount;
-
-            const name = info.match.name;
-
-            // Correct trade if needed
-            if (amountCanTrade <= 0) {
+            if (amount === cartAmount && cartAmount > 0) {
                 return this.bot.sendMessage(
                     steamID,
-                    'I ' +
-                    (ourAmount > 0 ? "can't sell" : "don't have") +
-                    ` any ${(cartAmount > 0 ? 'more ' : '') + pluralize(name, 0)}.`
+                    `I don't have any ${(ourAmount > 0 ? 'more ' : '') + pluralize(name, 0)}.`
                 );
             }
 
-            if (amount > amountCanTrade) {
-                amount = amountCanTrade;
+            this.bot.sendMessage(
+                steamID,
+                `I can only sell ${pluralize(name, amount, true)}. ` +
+                (amount > 1 ? 'They have' : 'It has') +
+                ` been added to your cart. Type "${prefix}cart" to view your cart summary or "${prefix}checkout" to checkout. 🛒`
+            );
+        } else
+            this.bot.sendMessage(
+                steamID,
+                `✅ ${pluralize(name, Math.abs(amount), true)}` +
+                ` has been added to your cart. Type "${prefix}cart" to view your cart summary or "${prefix}checkout" to checkout. 🛒`
+            );
 
-                if (amount === cartAmount && cartAmount > 0) {
-                    return this.bot.sendMessage(
-                        steamID,
-                        `I don't have any ${(ourAmount > 0 ? 'more ' : '') + pluralize(name, 0)}.`
-                    );
-                }
-
-                this.bot.sendMessage(
-                    steamID,
-                    `I can only sell ${pluralize(name, amount, true)}. ` +
-                    (amount > 1 ? 'They have' : 'It has') +
-                    ` been added to your cart. Type "${prefix}cart" to view your cart summary or "${prefix}checkout" to checkout. 🛒`
-                );
-            } else
-                this.bot.sendMessage(
-                    steamID,
-                    `✅ ${pluralize(name, Math.abs(amount), true)}` +
-                    ` has been added to your cart. Type "${prefix}cart" to view your cart summary or "${prefix}checkout" to checkout. 🛒`
-                );
-
-            cart.addOurItem(info.priceKey, amount);
-            Cart.addCart(cart);
-        }
+        cart.addOurItem(info.priceKey, amount);
+        Cart.addCart(cart);
     }
 
     private sellCartCommand(steamID: SteamID, message: string, prefix: string): void {
@@ -1186,8 +1259,8 @@ export default class Commands {
             return this.bot.sendMessage(
                 steamID,
                 'I ' +
-                    (skuCount.mostCanTrade > 0 ? "can't buy" : "don't want") +
-                    ` any ${(cartAmount > 0 ? 'more ' : '') + pluralize(skuCount.name, 0)}.`
+                (skuCount.mostCanTrade > 0 ? "can't buy" : "don't want") +
+                ` any ${(cartAmount > 0 ? 'more ' : '') + pluralize(skuCount.name, 0)}.`
             );
         }
 
@@ -1201,14 +1274,14 @@ export default class Commands {
             this.bot.sendMessage(
                 steamID,
                 `I can only buy ${pluralize(skuCount.name, amount, true)}. ` +
-                    (amount > 1 ? 'They have' : 'It has') +
-                    ` been added to your cart. Type "${prefix}cart" to view your cart summary or "${prefix}checkout" to checkout. 🛒`
+                (amount > 1 ? 'They have' : 'It has') +
+                ` been added to your cart. Type "${prefix}cart" to view your cart summary or "${prefix}checkout" to checkout. 🛒`
             );
         } else {
             this.bot.sendMessage(
                 steamID,
                 `✅ ${pluralize(skuCount.name, Math.abs(amount), true)}` +
-                    ` has been added to your cart. Type "${prefix}cart" to view your cart summary or "${prefix}checkout" to checkout. 🛒`
+                ` has been added to your cart. Type "${prefix}cart" to view your cart summary or "${prefix}checkout" to checkout. 🛒`
             );
         }
 
@@ -1322,7 +1395,7 @@ export default class Commands {
                     return this.bot.sendMessage(
                         steamID,
                         `❌ Ohh nooooes! Something went wrong while trying to get the offer: ${errMessage}` +
-                            (!offer ? ` (or the offer might already be canceled)` : '')
+                        (!offer ? ` (or the offer might already be canceled)` : '')
                     );
                 }
 
@@ -1348,6 +1421,8 @@ export default class Commands {
             });
         }
     }
+
+
 
 
     private queueCommand(steamID: SteamID): void {
@@ -1494,7 +1569,7 @@ export default class Commands {
         for (const sku of keySkus) {
             if (added >= amount) break;
 
-            const theyHave = adminInventory.getAmount({ priceKey: sku, tradableOnly: true });
+            const theyHave = adminInventory.getAmount({ priceKey: sku, includeNonNormalized: false, tradableOnly: true });
             const already = cart.getTheirCount(sku);
             const canAdd = Math.min(theyHave - already, amount - added);
             if (canAdd <= 0) continue;
@@ -1814,7 +1889,7 @@ export default class Commands {
         for (const sku of pureSKUs) {
             if (added >= amount) break;
 
-            const tradable = adminInv.getAmount({ priceKey: sku, tradableOnly: true });
+            const tradable = adminInv.getAmount({ priceKey: sku, includeNonNormalized: false, tradableOnly: true });
             const inCart   = cart.getTheirCount(sku);
             const canAdd   = Math.min(tradable - inCart, amount - added);
             if (canAdd <= 0) continue;
@@ -1895,7 +1970,7 @@ export default class Commands {
 
             const name = this.bot.schema.getName(SKU.fromString(sku), false);
             const alreadyInCart = cart.getTheirCount(sku);
-            const theyHave = adminInventory.getAmount({ priceKey: sku, tradableOnly: true });
+            const theyHave = adminInventory.getAmount({ priceKey: sku, includeNonNormalized: false, tradableOnly: true });
             const canTake = theyHave - alreadyInCart;
 
             if (canTake <= 0) continue;
@@ -1975,7 +2050,7 @@ export default class Commands {
             const name = this.bot.schema.getName(SKU.fromString(sku), false);
 
             const alreadyInCart = cart.getTheirCount(sku);
-            const theyHave = adminInventory.getAmount({ priceKey: sku, tradableOnly: true });
+            const theyHave = adminInventory.getAmount({ priceKey: sku, includeNonNormalized: false, tradableOnly: true });
 
             const canTake = theyHave - alreadyInCart;
             if (canTake <= 0) continue;
@@ -2073,7 +2148,7 @@ export default class Commands {
         for (const sku of festiveSkus) {
             if (added >= amount) break;
 
-            const tradable = adminInv.getAmount({ priceKey: sku, tradableOnly: true });
+            const tradable = adminInv.getAmount({ priceKey: sku, includeNonNormalized: false, tradableOnly: true });
             const inCart   = cart.getTheirCount(sku);
             const canAdd   = Math.min(tradable - inCart, amount - added);
             if (canAdd <= 0) continue;
@@ -2144,7 +2219,7 @@ export default class Commands {
         for (const sku of keySkus) {
             if (totalAdded >= amount) break;
 
-            const tradableAmount = inv.getAmount({ priceKey: sku, tradableOnly: true });
+            const tradableAmount = inv.getAmount({ priceKey: sku, includeNonNormalized: false, tradableOnly: true });
             const alreadyInCart = cart.getOurCount(sku);
             const canAdd = Math.min(tradableAmount - alreadyInCart, amount - totalAdded);
             if (canAdd <= 0) continue;
@@ -2161,7 +2236,7 @@ export default class Commands {
         for (const sku of metalSKUs) {
             if (totalAdded >= amount) break;
 
-            const tradableAmount = inv.getAmount({ priceKey: sku, tradableOnly: true });
+            const tradableAmount = inv.getAmount({ priceKey: sku, includeNonNormalized: false, tradableOnly: true });
             const alreadyInCart = cart.getOurCount(sku);
             const canAdd = Math.min(tradableAmount - alreadyInCart, amount - totalAdded);
             if (canAdd <= 0) continue;
@@ -2298,7 +2373,7 @@ export default class Commands {
         for (const sku of keySkus) {
             if (added >= amount) break;
 
-            const tradableAmount = inv.getAmount({ priceKey: sku, tradableOnly: true });
+            const tradableAmount = inv.getAmount({ priceKey: sku, includeNonNormalized: false, tradableOnly: true });
             const alreadyInCart = cart.getOurCount(sku);
             const canAdd = Math.min(tradableAmount - alreadyInCart, amount - added);
             if (canAdd <= 0) continue;
@@ -2364,7 +2439,7 @@ export default class Commands {
         for (const sku of festiveSkus) {
             if (added >= amount) break;
 
-            const tradable = inv.getAmount({ priceKey: sku, tradableOnly: true });
+            const tradable = inv.getAmount({ priceKey: sku, includeNonNormalized: false, tradableOnly: true });
             const already = cart.getOurCount(sku);
             const canAdd = Math.min(tradable - already, amount - added);
 
@@ -2538,6 +2613,7 @@ export default class Commands {
         Cart.addCart(cart);
         this.checkoutCommand(steamID, prefix);
     }
+    /*
     private withdrawItemsCommand(steamID: SteamID, message: string, prefix: string): void {
         const currentCart = Cart.getCart(steamID);
         if (currentCart !== null && !(currentCart instanceof AdminCart)) {
@@ -2576,16 +2652,15 @@ export default class Commands {
 
         let addedSomething = false;
 
-// Get all items in our inventory
-        const ourInventory = this.bot.inventoryManager.getInventory.getItems();
-
 // Create a map to count how many of each SKU we already added to the cart
         const cartCounts = new Map();
+// Get all items in our inventory
+        const ourInventory = this.bot.inventoryManager.getInventory.getItems;
+
 
 // Loop through every item we own
-        for (const item of ourInventory) {
+        for (const item of ourInventory) { // TS2495: Type 'Dict' is not an array type or a string type.
             const sku = item.sku();
-            // const sku = item.getSKU(); // Void function return value is used
 
             if (pureSKUs.includes(sku)) continue; // Skip pure items
 
@@ -2613,9 +2688,11 @@ export default class Commands {
         Cart.addCart(cart);
         this.checkoutCommand(steamID, prefix);
     }
+
+     */
 // Helper function to extract amount and item from input string
     private extractAmountAndItem(input: string): { amount?: number; item: string } {
-        input = input.trim();
+        input = input.replace('untradable', 'Non-Tradable').trim();
 
         let amount: number | undefined;
         let item: string;
@@ -2642,27 +2719,46 @@ export default class Commands {
         let restParts = [...parts];
 
         // Check for uncraftable variants at the start
-        const uncraftableVariants = ['uncraftable', 'uncraft', 'non craftable', 'non-craftable', 'noncraft', 'nc'];
+        const uncraftableVariants = ['uncraftable ', 'uncraft ', 'non craftable ', 'non-craftable ', 'noncraft ', 'nc '];
         const firstWord = parts[0].toLowerCase();
-        if (uncraftableVariants.includes(firstWord)) {
-            ncPrefix = 'Non-Craftable';
+        if (uncraftableVariants.includes(firstWord + ' ')) {
+            console.log('uncraftableVariants.includes(firstWord is true');
+            ncPrefix = 'Non-Craftable ';
             restParts.shift(); // remove the prefix from the rest of the item
         }
 
+
         // --- Normalize special shortcuts for the main item ---
-        let mainItem = restParts.join(' ');
+        let mainItem = restParts.join(' ').replace('Non-Craftable ', '');
 
         const lowerMain = mainItem.toLowerCase();
+        console.log('This is lowerMain: \'', lowerMain, '\'');
+        console.log('This is lowerMain test: \'', 'test', '\'');
         if (lowerMain === 'key' || lowerMain === 'keys') {
             mainItem = 'Mann Co. Supply Crate Key';
-        } else if (lowerMain === 'bp') {
+        } else if (lowerMain === 'bp' || lowerMain === 'expander') {
             mainItem = 'Backpack Expander';
-        } else if (lowerMain === 'tod') {
+        } else if (lowerMain === 'tod' || lowerMain === 'tour' || lowerMain === 'duty' || lowerMain === 'ticket') {
             mainItem = 'Tour of Duty Ticket';
         }
+        mainItem = mainItem.replace('pro ks ', 'professional killstreak ');
+        mainItem = mainItem.replace('spec ks ', 'specialized killstreak ');
+        mainItem = mainItem.replace('aussie ', 'australium ');
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
+        console.log('mainItem: ', mainItem);
 
         // --- Recombine nc prefix if it exists ---
-        if (ncPrefix) mainItem = `${ncPrefix} ${mainItem}`.trim();
+        if (ncPrefix) mainItem = `${ncPrefix}${mainItem}`.trim();
 
         // --- Build parse string ---
         let parseString = mainItem;
@@ -2695,16 +2791,15 @@ export default class Commands {
         }
 
         const { amount, item } = this.extractAmountAndItem(rawMessage);
-        let parseString = item;
         /*
         if (!(parseString.includes('item=') || parseString.includes('sku=') || parseString.includes('name=') ||
             parseString.includes('id=') || parseString.includes('defindex='))) parseString = `item=${item}`;
-         */
         if (amount !== undefined) {
             parseString += `&amount=${amount}`;
         }
+         */
 
-        const params = CommandParser.parseParams(parseString);
+        const params = CommandParser.parseParams(item);
         const tokenName = String(params.item || params.name || '').toLowerCase();
 
         if (this.tokenGroups[tokenName]) {
@@ -2860,9 +2955,12 @@ export default class Commands {
         const { amount, item } = this.extractAmountAndItem(rawMessage);
         //let parseString = `item=${item}`;
         let parseString = item;
+        /*
         if (amount !== undefined) {
             parseString += `&amount=${amount}`;
         }
+
+         */
 
         const params = CommandParser.parseParams(parseString);
         const groupSkus = this.tokenGroups[params.item];
@@ -3055,8 +3153,8 @@ export default class Commands {
             typeof params.ignorepainted === 'boolean'
                 ? params.ignorepainted
                 : typeof params.ignorepainted === 'number'
-                ? !!params.ignorepainted
-                : false;
+                    ? !!params.ignorepainted
+                    : false;
 
         const withGroup =
             params.withgroup === '' || typeof params.withgroup !== 'string'
@@ -3074,10 +3172,10 @@ export default class Commands {
 
             const pureAndWeapons = weaponsAsCurrency.enable
                 ? ['5021;6', '5000;6', '5001;6', '5002;6'].concat(
-                      weaponsAsCurrency.withUncraft
-                          ? this.bot.craftWeapons.concat(this.bot.uncraftWeapons)
-                          : this.bot.craftWeapons
-                  )
+                    weaponsAsCurrency.withUncraft
+                        ? this.bot.craftWeapons.concat(this.bot.uncraftWeapons)
+                        : this.bot.craftWeapons
+                )
                 : ['5021;6', '5000;6', '5001;6', '5002;6'];
 
             for (const sku in clonedDict) {
@@ -3383,14 +3481,14 @@ export default class Commands {
                     SKU.fromString(sku),
                     false
                 )}. Items that can only be donated to Backpack.tf:\n• ` +
-                    [
-                        'Non-Craftable Tour of Duty Ticket (725;6;uncraftable)',
-                        'Mann Co. Supply Crate Key (5021;6)',
-                        "Bill's Hat (126;6)",
-                        'Earbuds (143;6)',
-                        "Max's Severed Head (162;6)"
-                    ].join('\n• ') +
-                    '\n\nhttps://backpack.tf/donate'
+                [
+                    'Non-Craftable Tour of Duty Ticket (725;6;uncraftable)',
+                    'Mann Co. Supply Crate Key (5021;6)',
+                    "Bill's Hat (126;6)",
+                    'Earbuds (143;6)',
+                    "Max's Severed Head (162;6)"
+                ].join('\n• ') +
+                '\n\nhttps://backpack.tf/donate'
             );
         }
 
@@ -3435,15 +3533,15 @@ export default class Commands {
             this.bot.sendMessage(
                 steamID,
                 `I only have ${pluralize(name, amount, true)}. ` +
-                    (amount > 1 ? 'They have' : 'It has') +
-                    ` been added to your donate cart. Type "${prefix}donatecart" to view your donation cart summary or "${prefix}donatenow" to donate. 💰`
+                (amount > 1 ? 'They have' : 'It has') +
+                ` been added to your donate cart. Type "${prefix}donatecart" to view your donation cart summary or "${prefix}donatenow" to donate. 💰`
             );
         } else {
             this.bot.sendMessage(
                 steamID,
                 `✅ ${pluralize(name, Math.abs(amount), true)} has been ` +
-                    (amount >= 0 ? 'added to' : 'removed from') +
-                    ` your donate cart. Type "${prefix}donatecart" to view your donation cart summary or "${prefix}donatenow" to donate. 💰`
+                (amount >= 0 ? 'added to' : 'removed from') +
+                ` your donate cart. Type "${prefix}donatecart" to view your donation cart summary or "${prefix}donatenow" to donate. 💰`
             );
         }
 
@@ -3504,14 +3602,14 @@ export default class Commands {
             return this.bot.sendMessage(
                 steamID,
                 '❌ Wrong syntax. Example: !premium months=1' +
-                    '\n\n📌 Note: 📌\n- ' +
-                    [
-                        '1 month = 3 keys',
-                        '2 months = 5 keys',
-                        '3 months = 8 keys',
-                        '4 months = 10 keys',
-                        '1 year (12 months) = 30 keys'
-                    ].join('\n- ')
+                '\n\n📌 Note: 📌\n- ' +
+                [
+                    '1 month = 3 keys',
+                    '2 months = 5 keys',
+                    '3 months = 8 keys',
+                    '4 months = 10 keys',
+                    '1 year (12 months) = 30 keys'
+                ].join('\n- ')
             );
         }
 
@@ -3546,8 +3644,8 @@ export default class Commands {
             return this.bot.sendMessage(
                 steamID,
                 `⚠️ Are you sure that you want to buy premium for ${pluralize('month', amountMonths, true)}?` +
-                    `\nThis will cost you ${pluralize('key', amountKeys, true)}.` +
-                    `\nIf yes, retry by sending !premium months=${amountMonths}&i_am_sure=yes_i_am`
+                `\nThis will cost you ${pluralize('key', amountKeys, true)}.` +
+                `\nIf yes, retry by sending !premium months=${amountMonths}&i_am_sure=yes_i_am`
             );
         }
 

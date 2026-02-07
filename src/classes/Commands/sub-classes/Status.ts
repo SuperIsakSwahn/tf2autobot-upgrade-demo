@@ -1,5 +1,3 @@
-import path from 'path';
-import * as fs from 'fs';
 import SteamID from 'steamid';
 import pluralize from 'pluralize';
 import Currencies from '@tf2autobot/tf2-currencies';
@@ -11,6 +9,9 @@ import { stats, profit, itemStats, testPriceKey } from '../../../lib/tools/expor
 import { sendStats } from '../../DiscordWebhook/export';
 import loadPollData, { deletePollData } from '../../../lib/tools/polldata';
 import SteamTradeOfferManager from '@tf2autobot/tradeoffer-manager';
+import log from '../../../lib/logger';
+import path from "path";
+import fs from "fs";
 
 // Bot status
 
@@ -18,7 +19,6 @@ export default class StatusCommands {
     constructor(private readonly bot: Bot) {
         this.bot = bot;
     }
-
     readFestivizedCount(): number {
         const dir = path.join(this.bot.handler.getPaths.files.dir);
         if (!fs.existsSync(dir)) return 0;
@@ -37,24 +37,43 @@ export default class StatusCommands {
 
         const trades = stats(this.bot, pollData);
         const festivizedFallbackCount = this.readFestivizedCount();
-        const profits = await profit(this.bot, pollData, Math.floor(Date.now() - 86400)); //since -24h
+
+        const profits = await profit(this.bot, pollData, Math.floor((Date.now() - 86400000) / 1000)); //since -24h
 
         const keyPrices = this.bot.pricelist.getKeyPrices;
 
-        const timedProfitmadeFull = Currencies.toPolishCurrencies(profits.profitTimed, keyPrices.sell.metal).toString();
-        const timedProfitmadeInRef = timedProfitmadeFull.includes('key')
-            ? ` (${Currencies.toRefined(profits.profitTimed)} ref)`
-            : '';
+        // Calculate total profit in ref for cleaner display
+        // Raw profit already includes all buy/sell value differences via FIFO diff values
+        const totalProfit24h = profits.rawProfitTimed.keys * keyPrices.sell.metal + profits.rawProfitTimed.metal;
 
-        const profitmadeFull = Currencies.toPolishCurrencies(profits.tradeProfit, keyPrices.sell.metal).toString();
-        const profitmadeInRef = profitmadeFull.includes('key')
-            ? ` (${Currencies.toRefined(profits.tradeProfit)} ref)`
-            : '';
+        const totalProfitAllTime = profits.rawProfit.keys * keyPrices.sell.metal + profits.rawProfit.metal;
 
-        const profitOverpayFull = Currencies.toPolishCurrencies(profits.overpriceProfit, keyPrices.sell.metal).toString();
-        const profitOverpayInRef = profitOverpayFull.includes('key')
-            ? ` (${Currencies.toRefined(profits.overpriceProfit)} ref)`
-            : '';
+        // Format the breakdown components for display
+        const breakdown24h = {
+            keys: profits.rawProfitTimed.keys,
+            metal: profits.rawProfitTimed.metal
+        };
+
+        const breakdownAllTime = {
+            keys: profits.rawProfit.keys,
+            metal: profits.rawProfit.metal
+        };
+
+        // Create readable breakdown strings
+        const breakdown24hStr = `(${
+            breakdown24h.keys !== 0 ? `${breakdown24h.keys > 0 ? '+' : ''}${breakdown24h.keys} keys, ` : ''
+        }${breakdown24h.metal > 0 ? '+' : ''}${breakdown24h.metal.toFixed(2)} ref, at ${keyPrices.buy.metal}/${
+            keyPrices.sell.metal
+        } ref key rate)`;
+
+        const breakdownAllTimeStr = `(${
+            breakdownAllTime.keys !== 0 ? `${breakdownAllTime.keys > 0 ? '+' : ''}${breakdownAllTime.keys} keys, ` : ''
+        }${breakdownAllTime.metal > 0 ? '+' : ''}${breakdownAllTime.metal.toFixed(2)} ref, at ${keyPrices.buy.metal}/${
+            keyPrices.sell.metal
+        } ref key rate)`;
+
+        // Format estimate warning
+        const estimateWarning = profits.hasEstimates ? '\n\n⚠️ Profit contains estimates' : '';
 
         this.bot.sendMessage(
             steamID,
@@ -63,7 +82,6 @@ export default class StatusCommands {
             (tradesFromEnv !== 0
                 ? String(tradesFromEnv + trades.totalAcceptedTrades)
                 : String(trades.totalAcceptedTrades)) +
-            `\nFestivized items bought: ${festivizedFallbackCount}` +
             `\n\n--- Last 24 hours ---` +
             `\n• Processed: ${trades.hours24.processed}` +
             `\n• Accepted: ${trades.hours24.accepted.offer.total + trades.hours24.accepted.sent}` +
@@ -96,12 +114,14 @@ export default class StatusCommands {
             `\n---• by user: ${trades.today.canceled.byUser}` +
             `\n---• confirmation failed: ${trades.today.canceled.failedConfirmation}` +
             `\n---• unknown reason: ${trades.today.canceled.unknown}` +
-            `\n\n Profit (last 24h): ${timedProfitmadeFull + timedProfitmadeInRef}` +
-            `\nProfit made: ${profitmadeFull + profitmadeInRef} ${
-                profits.since !== 0 ? ` (since ${pluralize('day', profits.since, true)} ago)` : ''
-            }` +
-            `\nProfit from overpay: ${profitOverpayFull + profitOverpayInRef}` +
-            `\nKey rate: ${keyPrices.buy.metal}/${keyPrices.sell.metal} ref`
+            `\n\n--- Profits ---` +
+            `\nLast 24h: ${totalProfit24h > 0 ? '+' : ''}${totalProfit24h.toFixed(2)} ref ${breakdown24hStr}` +
+            `\nAll Time${profits.since !== 0 ? ` (since ${pluralize('day', profits.since, true)} ago)` : ''}: ${
+
+                totalProfitAllTime > 0 ? '+' : ''
+            }${totalProfitAllTime.toFixed(2)} ref ${breakdownAllTimeStr}` +
+            estimateWarning +
+            `\nFestivized items bought: ${festivizedFallbackCount}`
         );
     }
 
@@ -119,7 +139,7 @@ export default class StatusCommands {
         void sendStats(this.bot, true, steamID);
     }
 
-    statsWipeCommand(steamID: SteamID, message: string): void {
+    async statsWipeCommand(steamID: SteamID, message: string): Promise<void> {
         const params = CommandParser.parseParams(CommandParser.removeCommand(message));
 
         if (params.i_am_sure != 'yes_i_am') {
@@ -146,11 +166,18 @@ export default class StatusCommands {
 
             deletePollData(this.bot.handler.getPaths.files.dir);
 
+            // Clear FIFO inventory cost basis to prevent zombie entries
+            // Note: This only affects profit tracking, not PPU (which has its own system)
+            if (this.bot.inventoryCostBasis && typeof this.bot.inventoryCostBasis.clear === 'function') {
+                await this.bot.inventoryCostBasis.clear();
+                log.debug('FIFO inventory cost basis cleared');
+            }
+
             this.bot.sendMessage(steamID, '✅ All stats have been deleted.');
 
             this.bot.handler.commands.useUpdateOptionsCommand(
                 steamID,
-                '!config statistics.lastTotalTrades=0&statistics.startingTimeInUnix=0&statistics.lastTotalProfitMadeInRef=0&statistics.lastTotalProfitOverpayInRef=0&statistics.profitDataSinceInUnix=0'
+                '!config statistics.lastTotalTrades=0&statistics.startingTimeInUnix=0&statistics.lastTotalProfitMadeInRef=0&statistics.profitDataSinceInUnix=0'
             );
         } catch (err) {
             this.bot.sendMessage(steamID, `❌ Error while deleting stats: ${JSON.stringify(err)}`);
@@ -372,11 +399,11 @@ export default class StatusCommands {
 
                 if (this.bot.isAdmin(steamID)) {
                     // Admin only
-                    const boughtValue = Currencies.toPolishCurrencies(totalBoughtValue, keyPrice);
+                    const boughtValue = Currencies.toCurrencies(totalBoughtValue, keyPrice);
                     const boughtValueToString = boughtValue.toString();
-                    const soldValue = Currencies.toPolishCurrencies(totalSoldValue, keyPrice);
+                    const soldValue = Currencies.toCurrencies(totalSoldValue, keyPrice);
                     const soldValueToString = soldValue.toString();
-                    const netProfit = Currencies.toPolishCurrencies(totalSoldValue - totalBoughtValue, keyPrice);
+                    const netProfit = Currencies.toCurrencies(totalSoldValue - totalBoughtValue, keyPrice);
                     const netProfitToString = netProfit.toString();
 
                     adminOnlyMessage =
@@ -433,7 +460,7 @@ export default class StatusCommands {
                     this.bot.sendMessage(
                         steamID,
                         `⚠️ Update available! Current: v${process.env.BOT_VERSION}, Latest: v${latestVersion}.` +
-                        `\n\n📰 Release note: https://github.com/TF2Autobot/tf2autobot/releases` +
+                        `\n\n📰 Check discord (https://pricedb.io/discord) for release notes` +
                         (updateMessage ? `\n\n💬 Update message: ${updateMessage}` : '')
                     );
                     await timersPromises.setTimeout(1000);

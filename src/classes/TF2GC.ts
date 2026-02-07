@@ -6,7 +6,7 @@ export enum Attributes {
     CustomTexture = 1051,
     MakersMark = 1053,
     Killstreak = 1094,
-    GiftedBy = 2570, // We mainly want to exclude items with this but all attributes should cause the item to be excluded
+    GiftedBy = 2570,
     Festivizer = 2572
 }
 
@@ -36,9 +36,7 @@ type Job = {
         | 'delete'
         | 'sort'
         | 'removeAttributes'
-        | 'craftToken'
-        | 'craftVaccinator'
-        | 'smeltUselessWeapons';
+        | 'craftToken';
     defindex?: number;
     sku?: string;
     skus?: string[];
@@ -153,18 +151,6 @@ export default class TF2GC {
         this.newJob({ type: 'craftToken', assetids, tokenType, subTokenType, callback: callback });
     }
 
-
-    craftVaccinator(assetids: string[], callback?: (err: Error | null) => void): void {
-        log.debug(`Enqueueing craftVaccinator job for ` + assetids.join(', '));
-
-        this.newJob({ type: 'craftVaccinator', assetids, callback: callback });
-    }
-    smeltUselessWeapons(assetids: string[], callback?: (err: Error | null) => void): void { // Is this right?
-        log.debug(`Enqueueing smeltUselessWeapons job for ` + assetids.join(', '));
-        this.newJob({ type: 'smeltUselessWeapons', assetids, callback: callback });
-    }
-
-
     private newJob(job: Job): void {
         this.jobs.push(job);
         this.handleJobQueue();
@@ -217,10 +203,6 @@ export default class TF2GC {
                     func = this.handleSortJob.bind(this, job);
                 } else if (job.type === 'craftToken') {
                     func = this.handleCraftTokenJob.bind(this, job);
-                } else if (job.type === 'craftVaccinator') {
-                    func = this.handleCraftVaccinatorJob.bind(this, job);
-                } else if (job.type === 'smeltUselessWeapons') {
-                    func = this.handleSmeltUselessWeaponsJob.bind(this, job);
                 }
 
                 if (func) {
@@ -233,9 +215,6 @@ export default class TF2GC {
             .catch((err: Error) => {
                 this.finishedProcessingJob(err);
             });
-    }
-    delay(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     private handleCraftJob(job: Job): void {
@@ -259,56 +238,13 @@ export default class TF2GC {
         this.listenForEvent(
             'craftingComplete',
             (recipe: number, itemsGained: string[]) => {
-                if (!itemsGained || itemsGained.length === 0) {
-                    return this.finishedProcessingJob(new Error("Crafting failed: no items gained"));
-                }
                 // Remove items used for recipe
                 ids.forEach(assetid => inventory.removeItem(assetid));
 
                 // Add items gained
                 log.debug('itemsGained', itemsGained);
                 itemsGained.forEach(assetid => inventory.addItem(gainSKU, assetid));
-                this.finishedProcessingJob();
-            },
-            err => {
-                this.finishedProcessingJob(err);
-            }
-        );
-    }
-    private handleCraftVaccinatorJob(job: Job): void {
-        const inventory = this.bot.inventoryManager.getInventory;
 
-        log.debug(`Sending craftVaccinator request for assetids: ${job.assetids.join(', ')}`);
-
-        // Vaccinator recipe: 3 Quick-Fixes + 1 Reclaimed Metal
-        // Quick-Fix SKU: '411;6'
-        // Reclaimed Metal SKU: '5001;6'
-        // The crafted item SKU (Vaccinator) is 157;6 (IIRC - adjust if needed)
-        const craftedSKU = '157;6';
-
-        // Call the crafting function from your TF2 GC interface
-        // Assuming your tf2.craft accepts the assetids array and a recipe id
-        // Recipe IDs usually come from https://github.com/DontAskM8/TF2-Crafting-Recipe/blob/master/craftRecipe.json
-        // For Vaccinator, use the corresponding recipe number (e.g., 61) - replace with correct recipe number
-        const vaccinatorRecipeId = 120;
-
-        this.bot.tf2.craft(job.assetids, vaccinatorRecipeId);
-
-        this.listenForEvent(
-            'craftingComplete',
-            (recipe: number, itemsGained: string[]) => {
-                if (!itemsGained || itemsGained.length === 0) {
-                    return this.finishedProcessingJob(new Error("Crafting failed: no items gained"));
-                }
-                // Remove items used for recipe
-                job.assetids.forEach(assetid => inventory.removeItem(assetid));
-
-                // Add items gained (the crafted Vaccinator)
-                log.debug('itemsGained', itemsGained);
-                if (itemsGained.length === 0) {
-                } else {
-                    itemsGained.forEach(assetid => inventory.addItem(craftedSKU, assetid));
-                }
                 this.finishedProcessingJob();
             },
             err => {
@@ -389,49 +325,6 @@ export default class TF2GC {
             }
         );
     }
-    private handleSmeltUselessWeaponsJob(job: Job): void {
-        if (!this.canProcessJobWeapon(job)) {
-            return this.finishedProcessingJob(new Error("Can't process weapon crafting job"));
-        }
-
-        const inventory = this.bot.inventoryManager.getInventory;
-
-        // Use assetids passed with the job if present; fallback to findBySKU
-        let assetids: string[];
-        if (job.assetids && job.assetids.length > 0) {
-            assetids = job.assetids.filter(assetid => !this.bot.trades.isInTrade(assetid));
-        } else if (job.sku) {
-            assetids = inventory.findBySKU(job.sku, true).filter(assetid => !this.bot.trades.isInTrade(assetid));
-        } else {
-            return this.finishedProcessingJob(new Error("No assetids or SKU provided"));
-        }
-
-        const ids = assetids.splice(0, 2);
-        log.debug('Sending weapon craft request');
-        this.bot.tf2.craft(ids);
-
-        const gainSKU = '5000;6';
-        this.listenForEvent(
-            'craftingComplete',
-            (recipe: number, itemsGained: string[]) => {
-                if (!itemsGained || itemsGained.length === 0) {
-                    return this.finishedProcessingJob(new Error("Crafting failed: no items gained"));
-                }
-
-                // Remove items used for recipe
-                ids.forEach(assetid => inventory.removeItem(assetid));
-
-                // Add items gained
-                log.debug('itemsGained', itemsGained);
-                itemsGained.forEach(assetid => inventory.addItem(gainSKU, assetid));
-
-                this.finishedProcessingJob();
-            },
-            err => {
-                this.finishedProcessingJob(err);
-            }
-        );
-    }
 
     private handleCraftJobWeapon(job: Job): void {
         if (!this.canProcessJobWeapon(job)) {
@@ -440,25 +333,7 @@ export default class TF2GC {
 
         const inventory = this.bot.inventoryManager.getInventory;
 
-        let assetids = inventory.findBySKU(job.sku, true).filter(assetid => !this.bot.trades.isInTrade(assetid));
-
-        // 🟢 Exclusion list — weapons we NEVER want smelted
-        const excludedSkus = [
-            '237;6', // Rocket Jumper
-            '411;6', // Vaccinator
-            '998;6', // Original gifted item SKU (Gifted weapons use special SKUs)
-            '59;6',  // Dead Ringer
-            '60;6'   // Cloak and Dagger
-        ];
-
-        for (const sku of excludedSkus) {
-            const excludeIds = inventory.findBySKU(sku, true).filter(assetid => !this.bot.trades.isInTrade(assetid));
-            assetids = assetids.filter(id => !excludeIds.includes(id));
-        }
-
-        if (assetids.length < 2) {
-            return this.finishedProcessingJob(new Error("Not enough valid weapons to smelt (after exclusions)"));
-        }
+        const assetids = inventory.findBySKU(job.sku, true).filter(assetid => !this.bot.trades.isInTrade(assetid));
 
         const ids = assetids.splice(0, 2);
         log.debug('Sending weapon craft request');
@@ -482,7 +357,6 @@ export default class TF2GC {
             }
         );
     }
-
 
     private handleCraftJobClassWeapon(job: Job): void {
         if (!this.canProcessJobWeapon(job)) {
@@ -663,7 +537,6 @@ export default class TF2GC {
             }
         );
     }
-
     /**
      * Listens for GC event
      *

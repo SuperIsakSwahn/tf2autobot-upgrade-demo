@@ -10,7 +10,7 @@ export default function valueDiff(offer: TradeOffer): ValueDiff {
 
     const diff = value.their.total - value.our.total;
     const absoluteValue = Math.abs(diff);
-    console.log('valueDiff.ts, value: ', value)
+
     return {
         ourValue: value.our.total,
         theirValue: value.their.total,

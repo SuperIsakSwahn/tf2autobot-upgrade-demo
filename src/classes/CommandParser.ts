@@ -1,4 +1,4 @@
-import dotProp from 'dot-prop';
+import { setProperty } from 'dot-prop';
 import { UnknownDictionaryKnownValues } from '../types/common';
 import { parseJSON } from '../lib/helpers';
 
@@ -12,15 +12,17 @@ export default class CommandParser {
     }
 
     static removeCommand(message: string): string {
-        const spaceIndex = message.indexOf(' ');
-        if (spaceIndex === -1) return ''; // no arguments provided
-        return message.substring(spaceIndex + 1);
+        return message.substring(message.indexOf(' ') + 1);
     }
-
 
     static parseParams(paramString: string): UnknownDictionaryKnownValues {
         const params: UnknownDictionaryKnownValues = parseJSON(
-            '{"' + paramString.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}'
+            '{"' +
+                paramString
+                    .replace(/"/g, '\\"')
+                    .replace(/&(?!&)(?=[^&=]+=[^&]*)/g, '","') // Split only valid key-value pairs
+                    .replace(/=/g, '":"') +
+                '"}'
         );
 
         const parsed: UnknownDictionaryKnownValues = {};
@@ -53,7 +55,7 @@ export default class CommandParser {
                     }
                 }
 
-                dotProp.set(parsed, key.trim(), value);
+                setProperty(parsed, key.trim(), value);
             }
         }
 

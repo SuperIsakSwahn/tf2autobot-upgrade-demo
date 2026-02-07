@@ -7,6 +7,22 @@ import validator from '../lib/validator';
 import { Currency } from '../types/TeamFortress2';
 
 export const DEFAULTS: JsonOptions = {
+    globalDisable: {
+        messages: false,
+        greeting: false,
+        commands: false,
+        adminCommands: false
+    },
+
+    steamConnection: {
+        autoReconnect: {
+            enable: true,
+            maxAttempts: 5,
+            delaySeconds: 30,
+            exponentialBackoff: true
+        }
+    },
+
     miscSettings: {
         showOnlyMetal: {
             enable: true
@@ -17,6 +33,10 @@ export const DEFAULTS: JsonOptions = {
         },
         createListings: {
             enable: true
+        },
+        pricedbStore: {
+            enable: true,
+            enableInventoryRefresh: true
         },
         startHalted: {
             enable: false
@@ -37,7 +57,7 @@ export const DEFAULTS: JsonOptions = {
         },
         weaponsAsCurrency: {
             enable: true,
-            withUncraft: false
+            withUncraft: true
         },
         itemsOnBothSides: {
             enable: true
@@ -52,7 +72,7 @@ export const DEFAULTS: JsonOptions = {
         },
         alwaysRemoveItemAttributes: {
             customTexture: {
-                enable: false
+                enable: true
             }
             // giftedByTag: {
             //     enable: true
@@ -70,6 +90,10 @@ export const DEFAULTS: JsonOptions = {
         prefixes: {
             steam: '!',
             discord: '!'
+        },
+        ecp: {
+            useBoldChars: false,
+            useWordSwap: true
         }
     },
 
@@ -110,7 +134,11 @@ export const DEFAULTS: JsonOptions = {
         partialPriceUpdate: {
             enable: false,
             thresholdInSeconds: 604800, // 7 days
-            excludeSKU: []
+            excludeSKU: [],
+            removeMaxRestriction: false,
+            maxProtectedUnits: -1,
+            minProfitScrap: 1,
+            stockGracePeriodSeconds: 3600
         },
         filterCantAfford: {
             enable: false
@@ -140,13 +168,13 @@ export const DEFAULTS: JsonOptions = {
 
     bypass: {
         escrow: {
-            allow: true
+            allow: false
         },
         overpay: {
             allow: true
         },
         giftWithoutMessage: {
-            allow: true
+            allow: false
         }
     },
 
@@ -341,15 +369,15 @@ export const DEFAULTS: JsonOptions = {
     },
 
     crafting: {
-        manual: true,
+        manual: false,
         weapons: {
             enable: false
         },
         metals: {
             enable: false,
-            minScrap: 2,
-            minRec: 2,
-            threshold: 0
+            minScrap: 3,
+            minRec: 3,
+            threshold: 3
         }
     },
 
@@ -361,7 +389,7 @@ export const DEFAULTS: JsonOptions = {
         // 🟥_INVALID_VALUE
         invalidValue: {
             autoDecline: {
-                enable: true,
+                enable: false,
                 declineReply: ''
             },
             exceptionValue: {
@@ -373,6 +401,14 @@ export const DEFAULTS: JsonOptions = {
         invalidItems: {
             givePrice: false,
             autoAcceptOverpay: true,
+            autoDecline: {
+                enable: false,
+                declineReply: ''
+            }
+        },
+        // 🟨_INVALID_INTENT_ITEMS
+        invalidIntentItems: {
+            givePrice: false, // I don't think this does anything right now, might delete it later.
             autoDecline: {
                 enable: false,
                 declineReply: ''
@@ -449,6 +485,10 @@ export const DEFAULTS: JsonOptions = {
         invalidItems: {
             note: ''
         },
+        // 🟨_INVALID_INTENT_ITEMS
+        invalidIntentItems: {
+            note: ''
+        },
         // 🟧_DISABLED_ITEMS
         disabledItems: {
             note: ''
@@ -493,6 +533,9 @@ export const DEFAULTS: JsonOptions = {
             enable: false
         },
         steamApis: {
+            enable: false
+        },
+        expressLoad: {
             enable: false
         }
     },
@@ -1172,6 +1215,15 @@ interface OnlyEnable {
     enable?: boolean;
 }
 
+// ------------ Global Disable ------------
+
+interface GlobalDisable {
+    messages?: boolean;
+    greeting?: boolean;
+    commands?: boolean;
+    adminCommands?: boolean;
+}
+
 // ------------ SortType ------------
 
 interface SortInventory extends OnlyEnable {
@@ -1205,12 +1257,33 @@ interface Counteroffer extends OnlyEnable {
     autoDeclineLazyOffer?: boolean;
 }
 
+// --------- PriceDB Store Settings ----------
+
+interface PriceDBStore extends OnlyEnable {
+    enableInventoryRefresh?: boolean;
+}
+
+// --------- Misc Settings ----------
+
+// ------------ SteamConnection ------------
+
+interface SteamConnection {
+    autoReconnect?: AutoReconnect;
+}
+
+interface AutoReconnect extends OnlyEnable {
+    maxAttempts?: number;
+    delaySeconds?: number;
+    exponentialBackoff?: boolean;
+}
+
 // --------- Misc Settings ----------
 
 interface MiscSettings {
     showOnlyMetal?: OnlyEnable;
     sortInventory?: SortInventory;
     createListings?: OnlyEnable;
+    pricedbStore?: PriceDBStore;
     startHalted?: OnlyEnable;
     counterOffer?: Counteroffer;
     addFriends?: OnlyEnable;
@@ -1225,11 +1298,17 @@ interface MiscSettings {
     reputationCheck?: ReputationCheck;
     pricecheckAfterTrade?: OnlyEnable;
     prefixes?: Prefixes;
+    ecp?: EcpSettings;
 }
 
 interface Prefixes {
     steam?: string;
     discord?: string;
+}
+
+interface EcpSettings {
+    useBoldChars?: boolean;
+    useWordSwap?: boolean;
 }
 
 export interface ReputationCheck {
@@ -1298,6 +1377,10 @@ interface Pricelist {
 interface PartialPriceUpdate extends OnlyEnable {
     thresholdInSeconds?: number;
     excludeSKU?: string[];
+    removeMaxRestriction?: boolean;
+    maxProtectedUnits?: number;
+    minProfitScrap?: number;
+    stockGracePeriodSeconds?: number;
 }
 
 interface PriceAge {
@@ -1534,6 +1617,7 @@ interface OfferReceived {
     alwaysDeclineNonTF2Items?: boolean;
     invalidValue?: InvalidValue;
     invalidItems?: InvalidItems;
+    invalidIntentItems?: InvalidIntentItems;
     disabledItems?: AutoAcceptOverpayAndAutoDecline;
     overstocked?: AutoAcceptOverpayAndAutoDecline;
     understocked?: AutoAcceptOverpayAndAutoDecline;
@@ -1564,7 +1648,14 @@ interface AutoAcceptOverpayAndAutoDecline {
     autoDecline?: DeclineReply;
 }
 
+interface AutoDecline {
+    autoDecline?: DeclineReply;
+}
+
 interface InvalidItems extends AutoAcceptOverpayAndAutoDecline {
+    givePrice?: boolean;
+}
+interface InvalidIntentItems extends AutoDecline {
     givePrice?: boolean;
 }
 
@@ -1595,6 +1686,7 @@ interface ManualReview extends OnlyEnable {
     showItemPrices?: boolean;
     invalidValue?: OnlyNote;
     invalidItems?: OnlyNote;
+    invalidIntentItems?: OnlyNote;
     disabledItems?: OnlyNote;
     overstocked?: OnlyNote;
     understocked?: OnlyNote;
@@ -1612,6 +1704,7 @@ interface ManualReview extends OnlyEnable {
 interface InventoryApis {
     steamSupply?: OnlyEnable;
     steamApis?: OnlyEnable;
+    expressLoad?: OnlyEnable;
 }
 
 // ------------ Discord Chat ---------------
@@ -2147,6 +2240,8 @@ interface StrangeParts {
 // ------------ JsonOptions ------------
 
 export interface JsonOptions {
+    globalDisable?: GlobalDisable;
+    steamConnection?: SteamConnection;
     miscSettings?: MiscSettings;
     sendAlert?: SendAlert;
     pricelist?: Pricelist;
@@ -2188,6 +2283,7 @@ export default interface Options extends JsonOptions {
 
     bptfAccessToken?: string;
     bptfApiKey?: string;
+    pricedbStoreApiKey?: string;
     useragentHeaderCustom?: string;
     useragentHeaderShowVersion?: boolean;
 
@@ -2195,6 +2291,7 @@ export default interface Options extends JsonOptions {
     discordBotToken?: string;
     steamSupplyApiKey?: string;
     steamApisApiKey?: string;
+    expressLoadApiKey?: string;
 
     admins?: adminData[];
     keep?: string[];
@@ -2223,6 +2320,11 @@ export default interface Options extends JsonOptions {
 
     enableHttpApi?: boolean;
     httpApiPort?: number;
+    apiKey?: string;
+    IPC?: boolean;
+    tls?: boolean;
+    tlsHost?: string;
+    tlsPort?: number;
 }
 
 export interface adminData {
@@ -2505,6 +2607,7 @@ export function loadOptions(options?: Options): Options {
 
         bptfAccessToken: getOption('bptfAccessToken', '', String, incomingOptions),
         bptfApiKey: getOption('bptfApiKey', '', String, incomingOptions),
+        pricedbStoreApiKey: getOption('pricedbStoreApiKey', '', String, incomingOptions),
         useragentHeaderCustom: getOption('useragentHeaderCustom', '', String, incomingOptions),
         useragentHeaderShowVersion: getOption('useragentHeaderShowVersion', false, jsonParseBoolean, incomingOptions),
 
@@ -2512,11 +2615,12 @@ export function loadOptions(options?: Options): Options {
         discordBotToken: getOption('discordBotToken', '', String, incomingOptions),
         steamSupplyApiKey: getOption('steamsupplyApiKey', '', String, incomingOptions),
         steamApisApiKey: getOption('steamapisApiKey', '', String, incomingOptions),
+        expressLoadApiKey: getOption('expressloadApiKey', '', String, incomingOptions),
 
         admins: getOption('admins', [], jsonParseAdminData, incomingOptions),
         keep: getOption('keep', [], jsonParseArray, incomingOptions),
         itemStatsWhitelist: getOption('itemStatsWhitelist', [], jsonParseArray, incomingOptions),
-        groups: getOption('groups', ['103582791469033930'], jsonParseArray, incomingOptions),
+        groups: getOption('groups', ['103582791475394761'], jsonParseArray, incomingOptions),
         alerts: getOption('alerts', ['trade'], jsonParseArray, incomingOptions),
 
         enableSocket: getOption('enableSocket', true, jsonParseBoolean, incomingOptions),
@@ -2536,7 +2640,12 @@ export function loadOptions(options?: Options): Options {
         enableSaveLogFile: getOption('enableSaveLogFile', true, jsonParseBoolean, incomingOptions),
 
         enableHttpApi: getOption('enableHttpApi', false, jsonParseBoolean, incomingOptions),
-        httpApiPort: getOption('httpApiPort', 3001, jsonParseNumber, incomingOptions)
+        httpApiPort: getOption('httpApiPort', 3001, jsonParseNumber, incomingOptions),
+        apiKey: getOption('apiKey', '', String, incomingOptions),
+        IPC: getOption('IPC', false, jsonParseBoolean, incomingOptions),
+        tls: getOption('tls', false, jsonParseBoolean, incomingOptions),
+        tlsHost: getOption('tlsHost', 'localhost', String, incomingOptions),
+        tlsPort: getOption('tlsPort', 8000, jsonParseNumber, incomingOptions)
     };
 
     if (!envOptions.steamAccountName) {
