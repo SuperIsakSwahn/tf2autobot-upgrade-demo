@@ -50,7 +50,8 @@ export const DEFAULTS: JsonOptions = {
         counterOffer: {
             enable: true,
             skipIncludeMessage: false,
-            autoDeclineLazyOffer: false
+            autoDeclineLazyOffer: false,
+            useSeparateKeyRates: false
         },
         skipItemsInTrade: {
             enable: true
@@ -406,14 +407,6 @@ export const DEFAULTS: JsonOptions = {
                 declineReply: ''
             }
         },
-        // 🟨_INVALID_INTENT_ITEMS
-        invalidIntentItems: {
-            givePrice: false, // I don't think this does anything right now, might delete it later.
-            autoDecline: {
-                enable: false,
-                declineReply: ''
-            }
-        },
         // 🟧_DISABLED_ITEMS
         disabledItems: {
             autoAcceptOverpay: false,
@@ -483,10 +476,6 @@ export const DEFAULTS: JsonOptions = {
         },
         // 🟨_INVALID_ITEMS
         invalidItems: {
-            note: ''
-        },
-        // 🟨_INVALID_INTENT_ITEMS
-        invalidIntentItems: {
             note: ''
         },
         // 🟧_DISABLED_ITEMS
@@ -1255,6 +1244,7 @@ interface Game {
 interface Counteroffer extends OnlyEnable {
     skipIncludeMessage?: boolean;
     autoDeclineLazyOffer?: boolean;
+    useSeparateKeyRates?: boolean;
 }
 
 // --------- PriceDB Store Settings ----------
@@ -1617,7 +1607,6 @@ interface OfferReceived {
     alwaysDeclineNonTF2Items?: boolean;
     invalidValue?: InvalidValue;
     invalidItems?: InvalidItems;
-    invalidIntentItems?: InvalidIntentItems;
     disabledItems?: AutoAcceptOverpayAndAutoDecline;
     overstocked?: AutoAcceptOverpayAndAutoDecline;
     understocked?: AutoAcceptOverpayAndAutoDecline;
@@ -1655,9 +1644,6 @@ interface AutoDecline {
 interface InvalidItems extends AutoAcceptOverpayAndAutoDecline {
     givePrice?: boolean;
 }
-interface InvalidIntentItems extends AutoDecline {
-    givePrice?: boolean;
-}
 
 interface Duped {
     enableCheck?: boolean;
@@ -1686,7 +1672,6 @@ interface ManualReview extends OnlyEnable {
     showItemPrices?: boolean;
     invalidValue?: OnlyNote;
     invalidItems?: OnlyNote;
-    invalidIntentItems?: OnlyNote;
     disabledItems?: OnlyNote;
     overstocked?: OnlyNote;
     understocked?: OnlyNote;

@@ -12,7 +12,7 @@ import TF2 from '@tf2autobot/tf2';
 import dayjs, { Dayjs } from 'dayjs';
 import async from 'async';
 import semver from 'semver';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import pluralize from 'pluralize';
 import * as timersPromises from 'timers/promises';
 import fs from 'fs';
@@ -35,6 +35,7 @@ import BotManager from './BotManager';
 import MyHandler from './MyHandler/MyHandler';
 import Groups from './Groups';
 import InventoryCostBasis from './InventoryCostBasis';
+import Currencies from "@tf2autobot/tf2-currencies";
 
 import log from '../lib/logger';
 import Bans, { IsBanned } from '../lib/bans';
@@ -220,6 +221,88 @@ export default class Bot {
     public sendStatsInterval: NodeJS.Timeout;
 
     public periodicCheckAdmin: NodeJS.Timeout;
+    public extractItem(input: string): string {
+        // 1️⃣ Split parameters first
+        const [rawItem, ...paramParts] = input.split('&');
+        const paramsSuffix = paramParts.length > 0 ? '&' + paramParts.join('&') : '';
+        let parseString = '';
+        if (!input.toLowerCase().includes('strange part')) {
+            console.log('The input doesnt contain Strange Part');
+
+            // 2️⃣ Normalize & tokenize
+            let words = rawItem
+                .toLowerCase()
+                .replace('nc ', 'non-craftable ')
+                .replace('aussie ', 'australium ')
+                .replace('uncraftable ', 'non-craftable ')
+                .replace('uncraft ', 'non-craftable ')
+                .replace('ks ', 'killstreak ')
+                .replace('spec ', 'specialized ')
+                .replace('pro ', 'professional ')
+                .trim()
+                .split(/\s+/);
+
+            // 3️⃣ Extract modifiers
+            let uncraftable = false;
+            let ksTier = 0;
+
+            words = words.filter(word => {
+                if (word === 'non-craftable') {
+                    uncraftable = true;
+                    return false;
+                }
+                if (word === 'killstreak') {
+                    ksTier = Math.max(ksTier, 1);
+                    return false;
+                }
+                if (word === 'specialized') {
+                    ksTier = Math.max(ksTier, 2);
+                    return false;
+                }
+                if (word === 'professional') {
+                    ksTier = Math.max(ksTier, 3);
+                    return false;
+                }
+                return true;
+            });
+
+            // 4️⃣ Base item only
+            let baseItem = words.join(' ');
+
+            // 5️⃣ Normalize shortcuts on base item ONLY
+            switch (baseItem) {
+                case 'key':
+                case 'keys':
+                    baseItem = 'Mann Co. Supply Crate Key';
+                    break;
+                case 'tod':
+                case 'tour':
+                case 'duty':
+                case 'ticket':
+                    baseItem = 'Tour of Duty Ticket';
+                    break;
+                case 'bp':
+                case 'expander':
+                    baseItem = 'Backpack Expander';
+                    break;
+            }
+
+            // 6️⃣ Rebuild item string
+            let finalItem = baseItem;
+            if (ksTier === 1) finalItem = `Killstreak ${finalItem}`;
+            if (ksTier === 2) finalItem = `Specialized Killstreak ${finalItem}`;
+            if (ksTier === 3) finalItem = `Professional Killstreak ${finalItem}`;
+            if (uncraftable) finalItem = `Non-Craftable ${finalItem}`;
+
+            // 7️⃣ Final parse string
+            parseString = `${finalItem}${paramsSuffix}`;
+        } else {
+            parseString = rawItem;
+        }
+        if (!(parseString.includes('item=') || parseString.includes('sku=') || parseString.includes('name=') || parseString.includes('id=') || parseString.includes('defindex='))) { parseString = `item=${parseString}`; }
+        return parseString;
+    }
+
     getFirstAdminDiscordId(): string | null {
 
         try {
@@ -612,18 +695,36 @@ export default class Bot {
             })
                 .then(text => {
                     // Simple parser: find the line starting with tf2autobot-upgrade:
-                    const match = text.match(/^tf2autobot-upgrade:\s*(.+)$/m);
+                    const match = text.match(/^tf2autobot-upgrade-demo:\s*(.+)$/m);
                     if (!match) return reject(new Error('Version not found in Versions.txt'));
                     resolve({ version: match[1].trim() });
                 })
                 .catch(reject);
         });
     }
+    async fetchPriceDbJson(sku: string) {
+        // API item endpoint returns structured JSON
+        log.warn(`Using PriceDB fallback for ${sku}`);
+        const { data } = await axios.get(`https://pricedb.io/api/item/${sku}`, {
+            timeout: 5000
+        });
+
+        if (!data || typeof data !== 'object' || !data.buy || !data.sell) {
+            throw new Error('Invalid PriceDB JSON');
+        }
+
+        return {
+            buy: new Currencies(data.buy),
+            sell: new Currencies(data.sell),
+            source: data.source,
+            time: data.time
+        };
+    }
 
     async checkUpgradeUpdates(anyoneAsked=false): Promise<void> {
         try {
             const content = await this.getLatestUpgradeVersion();
-            const currentVersion = '1.8'; // your local version number
+            const currentVersion = '1.9'; // your local version number
 
             if (content.version !== currentVersion) {
                 const dmText = `⚠️ tf2autobot-upgrade-demo update available!\nCurrent: v${currentVersion}\nLatest: v${content.version}\nDownload: https://github.com/SuperIsakSwahn/tf2autobot-upgrade-demo`;

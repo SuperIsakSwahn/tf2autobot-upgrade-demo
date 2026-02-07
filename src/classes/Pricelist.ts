@@ -552,16 +552,23 @@ export default class Pricelist extends EventEmitter {
         const keyPrices = this.getKeyPrices;
 
         if (entry.autoprice && !entry.isPartialPriced && !isBulk) {
-            // skip this part if autoprice is false and/or isPartialPriced is true
-            const price: GetItemPriceResponse = await this.priceSource.getPrice(entry.sku).catch(err => {
-                throw new Error(
-                    `Unable to get current prices for ${entry.sku}: ${
-                        (err as ErrorRequest).body && (err as ErrorRequest).body.message
-                            ? (err as ErrorRequest).body.message
-                            : (err as ErrorRequest).message
-                    }`
-                );
-            });
+            let price: GetItemPriceResponse;
+            try {
+                // skip this part if autoprice is false and/or isPartialPriced is true
+                price = await this.priceSource.getPrice(entry.sku);
+            } catch (err) {
+                try {
+                    price = await this.bot.fetchPriceDbJson(entry.sku);
+                } catch (fallbackErr) {
+                    throw new Error(
+                        `Unable to get current prices for ${entry.sku}: ${
+                            (err as ErrorRequest).body && (err as ErrorRequest).body.message
+                                ? (err as ErrorRequest).body.message
+                                : (err as ErrorRequest).message
+                        }`
+                    );
+                }
+            }
 
             const newPrices = {
                 buy: new Currencies(price.buy),
@@ -576,7 +583,7 @@ export default class Pricelist extends EventEmitter {
                 if (!canUseKeyPricesFromSource) {
                     throw new Error(
                         'Broken key prices from source - Please make sure prices for Mann Co. Supply Crate Key (5021;6) are correct - ' +
-                            'both buy and sell "keys" property must be 0 and value ("metal") must not 0'
+                        'both buy and sell "keys" property must be 0 and value ("metal") must not 0'
                     );
                 }
 
@@ -614,7 +621,7 @@ export default class Pricelist extends EventEmitter {
                     if (!canUseKeyPricesFromSource) {
                         throw new Error(
                             'Broken key prices from source - Please make sure prices for Mann Co. Supply Crate Key (5021;6) are correct - ' +
-                                'both buy and sell "keys" property must be 0 and value ("metal") must not 0'
+                            'both buy and sell "keys" property must be 0 and value ("metal") must not 0'
                         );
                     }
 

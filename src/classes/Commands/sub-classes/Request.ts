@@ -23,6 +23,11 @@ export default class RequestCommands {
     }
 
     pricecheckCommand(steamID: SteamID, message: string): void {
+        const parts = message.trim().split(/\s+/, 2);
+        const command = parts[0]; // e.g. "!u" or "!update"
+        const rest = message.slice(command.length).trim(); // everything after the first word
+        const extracted = this.bot.extractItem(rest);
+        message = `${command} ${extracted}`;
         const params = CommandParser.parseParams(CommandParser.removeCommand(removeLinkProtocol(message)));
         let sku = params.sku as string;
         if (sku !== undefined && !testPriceKey(sku)) {
@@ -99,7 +104,20 @@ export default class RequestCommands {
     }
 
     async checkCommand(steamID: SteamID, message: string): Promise<void> {
+        const parts = message.trim().split(/\s+/, 2);
+        const command = parts[0]; // e.g. "!u" or "!update"
+        const rest = message.slice(command.length).trim(); // everything after the first word
+        const extracted = this.bot.extractItem(rest);
+        message = `${command} ${extracted}`;
         const params = CommandParser.parseParams(CommandParser.removeCommand(removeLinkProtocol(message)));
+        // reject trade offer IDs or numeric-only input
+        if (params.sku === undefined && /^\d+$/.test(rest)) {
+            return this.bot.sendMessage(
+                steamID,
+                `❌ That looks a number, not an item.\nUse !check <item name> or !check <sku>.`
+            );
+        }
+
         let sku = params.sku as string;
         if (sku !== undefined && !testPriceKey(sku)) {
             return this.bot.sendMessage(steamID, `❌ "sku" should not be empty or wrong format.`);
@@ -124,18 +142,32 @@ export default class RequestCommands {
 
             this.bot.sendMessage(
                 steamID,
-                `🔎 ${name}:\n• Buy  : ${currBuy.toString()}\n• Sell : ${currSell.toString()}\nhttps://pricedb.io/item/${sku}`
+                `🔎 ${name}:\n• Buy  : ${currBuy.toString()}\n• Sell : ${currSell.toString()}\nhttps://pricedb.io/api/graph/${sku}`
+                //`🔎 ${name}:\n• Buy  : ${currBuy.toString()}\n• Sell : ${currSell.toString()}\nhttps://pricedb.io/item/${sku}`
             );
         } catch (err) {
-            return this.bot.sendMessage(
-                steamID,
-                `Error getting price for ${name === null ? sku : name}: ${
-                    (err as ErrorRequest).body && (err as ErrorRequest).body.message
-                        ? (err as ErrorRequest).body.message
-                        : (err as ErrorRequest).message
-                }`
-            );
+            try {
+                const fallback = await this.bot.fetchPriceDbJson(sku);
+
+                return this.bot.sendMessage(
+                    steamID,
+                    `⚠️ Pricer failed, using PriceDB fallback\n` +
+                    `🔎 ${name}:\n` +
+                    `• Buy  : ${fallback.buy.toString()}\n` +
+                    `• Sell : ${fallback.sell.toString()}\n` +
+                    `https://pricedb.io/api/graph/${sku}`
+                );
+            } catch (fallbackErr) {
+                return this.bot.sendMessage(
+                    steamID,
+                    `Error getting price for ${name ?? sku}: ${
+                        (err as ErrorRequest).message
+                    }\nFallback also failed.\n` +
+                    `https://pricedb.io/api/graph/${sku}`
+                );
+            }
         }
+
     }
 }
 

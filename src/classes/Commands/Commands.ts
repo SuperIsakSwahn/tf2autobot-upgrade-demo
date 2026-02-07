@@ -1100,18 +1100,7 @@ export default class Commands {
                 return this.bot.sendMessage(steamID, custom ? custom : '❌ This command is disabled by the owner.');
             }
         }
-
-        const info = getItemAndAmount(
-            steamID,
-            ecp ? message : CommandParser.removeCommand(message),
-            this.bot,
-            prefix,
-            command === 'b' ? 'buy' : command === 's' ? 'sell' : command
-        );
-
-        if (info === null) {
-            return;
-        }
+        let arg = CommandParser.removeCommand(message).trim().toLowerCase();
 
         const cart = new UserCart(
             steamID,
@@ -1119,15 +1108,26 @@ export default class Commands {
             this.weaponsAsCurrency.enable ? this.bot.craftWeapons : [],
             this.weaponsAsCurrency.enable && this.weaponsAsCurrency.withUncraft ? this.bot.uncraftWeapons : []
         );
+        arg = this.bot.extractItem(arg).slice(5);
+        // Normal case for single item
+        const info = getItemAndAmount(
+            steamID,
+            arg,
+            this.bot,
+            prefix,
+            command === 'b' ? 'buy' : command === 's' ? 'sell' : command
+        );
+        if (info === null) {
+            return;
+        }
 
-        cart.setNotify = true;
         if (['b', 'buy'].includes(command)) {
             cart.addOurItem(info.priceKey, info.amount);
         } else {
-            cart.addTheirItem(info.match.sku, info.amount);
+            cart.addTheirItem(info.priceKey, info.amount);
         }
 
-        this.addCartToQueue(cart, false, false);
+        return this.addCartToQueue(cart, false, false);
     }
 
     private buyCartCommand(steamID: SteamID, message: string, prefix: string): void {
