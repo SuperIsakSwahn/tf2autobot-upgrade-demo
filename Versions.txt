@@ -52,6 +52,7 @@ Apparently I forgot to fill this in but I think it was a small update
 1.11:
 Added a autopricerMessages option, if disabled, the bot will never tell you about automatic price updates in the discord server.  
 Added an systemMessages option, if disabled, the bot will never send system messages in the discord server.  
+Added a readOnlyPricelist option, if enabled, the bot will never write to the pricelist file, it will only read it, load it into memory and make changes in there without writing them to the file, useful if multiple bots use one pricelist (one bot has the option disabled, all the other ones enable it)
 
 Paid version:
 
