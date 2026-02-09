@@ -268,3 +268,4 @@ Added an systemMessages option, before, autopricerMessages also targetted system
 Fixed a couple of fatal bugs
 Added a onlyHighValueListings option to options.json which if it is enabled, the bot only creates listings for items in the highValue group
 Made it so on startup, missing options parameters get autoadded
+Added !wnonhighvalue which withdraws all items that aren't in the highValue group, and !whighvalue which withdraws the opposite items
