@@ -1,5 +1,31 @@
-Assuming you already have tf2autobot setup, drag the src folder in there, replace all files that this will, then build your bot's dist folder (such as the tsc command)
+There are a lot of changes here. I won't go over the key rates, that's advanced logic, a huge rabbit hole
+I added new pricelist parameters, listings
+0 = buy, 1 = sell, 2 = bank, 3 = off
+That determins what listings a bot may list
+If it's off, a bot will not list this item
+If it's set to sell, a bot will only list sell orders (assuming it has the item and intent=sell or intent=bank) so it does not affect trades itself
+You can use this so you can add prices but not waste listings on them if you think they will sit there but not attract anyone
+There's also priority (for sell orders) and priorityBuy (for buy orders), they sort the order the listings get added in
+There are new commands too
+And in MyHandler I added more fallback prices for several items, you can add more fallback prices if you want to
+You can also adjust the existing ones (like 6 ref for a festivized item etc)
+Currently, it ONLY uses fallback for incoming items
+The parts that I've done that are easy to implement are free of use, you don't have to pay for them, the hard ones are not free.
+
+Assuming you already have tf2autobot setup (Use bliss's fork), drag the src folder in there, replace all files that this will, then build your bot's dist folder (such as the tsc command)
+Drop and replace the node modules folder too (the files are modified too)
+
+If you want your bot to buy tickets/expanders at 1/3 keys each and sell at 1/2 keys, drop in the src folder and replace all, then drop in the src but NCTOD=0.5k folder and replace all.
 There are shortcuts to items
 If you type !w 1 then you withdraw all vaccinators and quick-fixes for example, check Commands.ts for more details (tokenGroups)
-Basic killstreak weapons fallback to 6 ref, vaccinators 1 ref, festivized items 5 ref etc, check MyHandler for exact lists.
-Don't remove the file without an extension that is just a number in the files\botname\ folder, it represents how many festivizers it bought.
+If you want to sell files, there's a steam-pricelist.json template, it goes into the files/accountname folder
+If there's no sell entry then that means it's free
+If you later want to automate versioning, you can name the file like:
+If you see a file without an extension in the files/bot/ folder, don't delete it, it represents how many festivized items the bot bought
+You use the new priority parameters like this:
+!u Strange Brimmed Bootlegger&listings=bank&priority=1&priorityBuy=-1
+If you see a message like this:
+Used fallback pricer for Non-Craftable Vaccinator (998;6;uncraftable) - Please add it to your autopricer, it's possible it won't receive price updates otherwise.
+Then you're using a custom pricer, but that pricer doesn't have the item you specified so it fell back to pricedb, and that fallback will most likely not emit price changes so the bot will be stuck on that price until your custom pricer has it, so I highly recommend adding it there
+
+If you need help with something related to this upgrade feel free to ask in the discord https://discord.gg/8TvUNk3Brb
