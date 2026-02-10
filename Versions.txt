@@ -278,3 +278,6 @@ Added a onlyHighValueListings option to options.json which if it is enabled, the
 Made it so on startup, missing options parameters get autoadded
 Added !wnonhighvalue which withdraws all items that aren't in the highValue group, and !whighvalue which withdraws the opposite items
 Removed spy + melee from bulk token combination since the ROI is low compared to spy + pda2 and other classes + melee
+
+Fixed a key rate bug where if a user sends an offer with an item the bot is buying for a key and takes an item the bot sells for a key, the bot doesn't value them the same
+Any time a key rate is involved I can miss bugs even if I try to test thoroughly
