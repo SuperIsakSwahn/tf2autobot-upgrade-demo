@@ -281,3 +281,5 @@ Removed spy + melee from bulk token combination since the ROI is low compared to
 
 Fixed a key rate bug where if a user sends an offer with an item the bot is buying for a key and takes an item the bot sells for a key, the bot doesn't value them the same
 Any time a key rate is involved I can miss bugs even if I try to test thoroughly
+
+Other bug fixes
