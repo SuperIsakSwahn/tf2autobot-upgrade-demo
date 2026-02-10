@@ -261,6 +261,7 @@ APP
 • Buy  : 25.55 ref
 • Sell : 29.33 ref
 https://pricedb.io/api/graph/30777;11
+NOTE: I recommend adding the item to your custom pricer because I don't think price changes get emitted from the fallback pricer.
 
 Fixed so if you !check a number the bot doesn't crash
 
