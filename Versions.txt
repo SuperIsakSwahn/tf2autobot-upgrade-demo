@@ -264,6 +264,13 @@ https://pricedb.io/api/graph/30777;11
 NOTE: I recommend adding the item to your custom pricer because I don't think price changes get emitted from the fallback pricer.
 
 Fixed so if you !check a number the bot doesn't crash
+Fixed so if you !update a number the bot doesn't crash
+Fixed so if you !add a number the bot doesn't crash
+Fixed so if you !re a number the bot doesn't crash
+Fixed so if you !addbulk numbers the bot doesn't crash
+Fixed so if you !updatebulk numbers the bot doesn't crash
+Fixed so if you !removebulk numbers the bot doesn't crash
+And more
 
 Added an systemMessages option, before, autopricerMessages also targetted system messages but now systemMessages does instead.
 Fixed a couple of fatal bugs
