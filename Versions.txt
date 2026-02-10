@@ -283,3 +283,5 @@ Fixed a key rate bug where if a user sends an offer with an item the bot is buyi
 Any time a key rate is involved I can miss bugs even if I try to test thoroughly
 
 Fixed strange parts not being able to be updated
+
+Improved donation commands handling
