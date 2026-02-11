@@ -285,3 +285,6 @@ Any time a key rate is involved I can miss bugs even if I try to test thoroughly
 Fixed strange parts not being able to be updated
 
 Improved donation commands handling
+
+fixed "Crafting 0 vaccinators" bug
+Fixed more commands handling
