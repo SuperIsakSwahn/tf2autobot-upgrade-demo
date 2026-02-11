@@ -288,3 +288,5 @@ Improved donation commands handling
 
 fixed "Crafting 0 vaccinators" bug
 Fixed more commands handling
+
+Added a new option: miscSettings.autoRefreshListingsInterval.seconds (default value: 1800, 30 minutes, before I added this option the program always refreshed the listings every 30 minutes)
