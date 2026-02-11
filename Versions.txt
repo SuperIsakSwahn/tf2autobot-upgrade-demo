@@ -290,3 +290,6 @@ fixed "Crafting 0 vaccinators" bug
 Fixed more commands handling
 
 Added a new option: miscSettings.autoRefreshListingsInterval.seconds (default value: 1800, 30 minutes, before I added this option the program always refreshed the listings every 30 minutes)
+
+Added a warning option to the .env file: ALERTS=["trade", "version", "warning"]
+I recommend adding warning to your alerts
