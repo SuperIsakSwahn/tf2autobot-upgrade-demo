@@ -293,3 +293,5 @@ Added a new option: miscSettings.autoRefreshListingsInterval.seconds (default va
 
 Added a warning option to the .env file: ALERTS=["trade", "version", "warning"]
 I recommend adding warning to your alerts
+
+Set the default filterCantAfford option to true
