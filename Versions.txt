@@ -302,3 +302,4 @@ Added a new !po command which first crafts vaccinators, then tokens, then smelts
 
 Fixed the bot not setting its status to offline on !stop
 Same with restart
+No, I didn't do the same with restart
