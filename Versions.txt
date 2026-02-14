@@ -270,7 +270,7 @@ Fixed so if you !re a number the bot doesn't crash
 Fixed so if you !addbulk numbers the bot doesn't crash
 Fixed so if you !updatebulk numbers the bot doesn't crash
 Fixed so if you !removebulk numbers the bot doesn't crash
-And more
+And moreas
 
 Added an systemMessages option, before, autopricerMessages also targetted system messages but now systemMessages does instead.
 Fixed a couple of fatal bugs
@@ -299,3 +299,5 @@ Set the default filterCantAfford option to true
 Fixed the bot not listing as many items as it should
 
 Added a new !po command which first crafts vaccinators, then tokens, then smelts useless weapons, then withdraws the vaccinators, tokens, and checks out
+
+Fixed the bot not setting its discord status to offline on !stop
