@@ -295,3 +295,7 @@ Added a warning option to the .env file: ALERTS=["trade", "version", "warning"]
 I recommend adding warning to your alerts
 
 Set the default filterCantAfford option to true
+
+Fixed the bot not listing as many items as it should
+
+Added a new !po command which first crafts vaccinators, then tokens, then smelts useless weapons, then withdraws the vaccinators, tokens, and checks out
