@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.54
+tf2autobot-upgrade: 1.55
 tf2autobot-upgrade-demo: 1.10
 
 Free version:
@@ -305,3 +305,22 @@ Same with restart
 No, I didn't do the same with restart
 
 Integrated Bliss's 5.16.2 bug fixes
+
+
+1.55:
+
+Fixed this bug:
+
+!po
+PolishGuyXVII
+APP
+ — 6:56 AM
+⏳ Starting Polish Operation...
+📋 Step 1/7: Crafting vaccinators...
+❌ Cannot craft any vaccinators.
+I have 1 Quick-Fix(es) and 3 Reclaimed Metal(s).
+PolishGuy
+
+ — 6:56 AM
+ok
+go on
