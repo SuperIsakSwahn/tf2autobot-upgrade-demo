@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.55
+tf2autobot-upgrade: 1.56
 tf2autobot-upgrade-demo: 1.10
 
 Free version:
@@ -324,3 +324,8 @@ PolishGuy
  — 6:56 AM
 ok
 go on
+
+
+1.56:
+
+Changed the vaccinators from the first to the third step in polish operation
