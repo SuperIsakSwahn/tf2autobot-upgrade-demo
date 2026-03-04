@@ -329,3 +329,8 @@ go on
 1.56:
 
 Changed the vaccinators from the first to the third step in polish operation
+
+
+1.57:
+
+Made it so the bot stops trying to craft items with absent material
