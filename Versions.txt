@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.57
+tf2autobot-upgrade: 1.58
 tf2autobot-upgrade-demo: 1.10
 
 Free version:
@@ -336,3 +336,5 @@ Changed the vaccinators from the first to the third step in polish operation
 Made it so the bot stops trying to craft items with absent material
 
 Made polishoperation 2 craft the metal back to refined at the end
+
+Made it so the bot halts on polishoperation2 and nly crafts as much scrap as needed
