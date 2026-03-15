@@ -338,3 +338,9 @@ Made it so the bot stops trying to craft items with absent material
 Made polishoperation 2 craft the metal back to refined at the end
 
 Made it so the bot halts on polishoperation2 and only crafts as much scrap as needed
+
+1.58
+
+Made polishoperation 2 no longer craft the metal back to refined at the end
+
+Fixed a bug where if you use a custom pricer and in the env file there's a trailing / symbol, the bot can't use the autopricer
