@@ -350,4 +350,4 @@ Changed it so when you deposit/withdraw groups of items, the amount is the total
 Removed a very strangely placed this.bot.getActions(); line from the craft vaccinator command
 
 
-Improved bulkd add message:             const message = added < 0 ? `✅ Bulk add successful: ${added} added, ${failed} failed` : `❌ All ${failed} failed`;
+Improved bulk add message:             const message = added < 0 ? `✅ Bulk add successful: ${added} added, ${failed} failed` : `❌ All ${failed} failed`;
