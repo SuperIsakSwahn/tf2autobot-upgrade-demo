@@ -348,3 +348,6 @@ Fixed a bug where if you use a custom pricer and in the env file there's a trail
 Changed it so when you deposit/withdraw groups of items, the amount is the total items you deposit, not the individual amount per item
 
 Removed a very strangely placed this.bot.getActions(); line from the craft vaccinator command
+
+
+Improved bulkd add message:             const message = added < 0 ? `✅ Bulk add successful: ${added} added, ${failed} failed` : `❌ All ${failed} failed`;
