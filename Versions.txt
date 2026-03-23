@@ -351,3 +351,5 @@ Removed a very strangely placed this.bot.getActions(); line from the craft vacci
 
 
 Improved bulk add message:             const message = added < 0 ? `✅ Bulk add successful: ${added} added, ${failed} failed` : `❌ All ${failed} failed`;
+
+Added OG-gifted (2015 and earlier) items to the high value list
