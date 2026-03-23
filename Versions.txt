@@ -355,3 +355,5 @@ Improved bulk add message:             const message = added < 0 ? `✅ Bulk add
 Added OG-gifted (2015 and earlier) items to the high value list
 
 Changed some code for automatically crafting weapons to O(1)
+
+Added highValue filter to the findBySKU function
