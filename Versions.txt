@@ -359,3 +359,5 @@ Changed some code for automatically crafting weapons to O(1)
 Added highValue filter to the findBySKU function
 
 De-duplicated code
+
+Made it so when you craft weapons the stats get saved automatically
