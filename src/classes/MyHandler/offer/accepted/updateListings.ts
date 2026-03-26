@@ -648,7 +648,7 @@ export default function updateListings(
             dict.their[priceKey] !== undefined
         ) {
             const amountTraded = dict.their[priceKey];
-            const assetids = inventory.findBySKU(priceKey, true).sort((a, b) => parseInt(b) - parseInt(a)); // descending order
+            const assetids = inventory.findBySKU(priceKey, true, false).sort((a, b) => parseInt(b) - parseInt(a)); // descending order
             const assetidsTraded = assetids.slice(0).splice(0, amountTraded);
 
             log.debug(`Adding ${priceKey} (${assetidsTraded.join(', ')}) to the queue to remove custom texture...`);

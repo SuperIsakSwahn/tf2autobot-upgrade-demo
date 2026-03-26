@@ -436,7 +436,7 @@ export default class UserCart extends Cart {
             });
             let alteredMessage: string;
 
-            let ourAssetids = ourInventory.findBySKU(entry.sku, true);
+            let ourAssetids = ourInventory.findBySKU(entry.sku, true, false);
             if (isAssetId) {
                 ourAssetids = ourAssetids.includes(priceKey) ? [priceKey] : [];
             } else {
@@ -559,7 +559,7 @@ export default class UserCart extends Cart {
                     sku = theirInventory.findByAssetid(theirAssetids[0]);
                 }
             } else {
-                theirAssetids = theirInventory.findBySKU(sku, true);
+                theirAssetids = theirInventory.findBySKU(sku, true, false);
             }
 
             let alteredMessage: string;
@@ -707,7 +707,7 @@ export default class UserCart extends Cart {
             const entry = this.bot.pricelist.getPriceBySkuOrAsset({ priceKey, onlyEnabled: true });
             const amount = this.our[priceKey];
 
-            let assetids = ourInventory.findBySKU(entry.sku, true);
+            let assetids = ourInventory.findBySKU(entry.sku, true, false);
             if (isAssetId) {
                 assetids = assetids.includes(priceKey) ? [priceKey] : [];
             } else {
@@ -800,7 +800,7 @@ export default class UserCart extends Cart {
             if (findByPartialSku) {
                 assetids = theirInventory.findByPartialSku(sku, elevatedStrange);
             } else {
-                assetids = theirInventory.findBySKU(sku, true);
+                assetids = theirInventory.findBySKU(sku, true, false);
             }
 
             const addToDupeCheckList =

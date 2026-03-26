@@ -27,7 +27,7 @@ export default class AdminCart extends Cart {
                 }
 
                 let amount = this.getOurCount(sku);
-                const ourAssetids = ourInventory.findBySKU(sku, true);
+                const ourAssetids = ourInventory.findBySKU(sku, true, false);
                 const ourAssetidsCount = ourAssetids.length;
 
                 if (amount > ourAssetidsCount) {
@@ -126,7 +126,7 @@ export default class AdminCart extends Cart {
                         }
 
                         let amount = this.getTheirCount(sku);
-                        const theirAssetids = theirInventory.findBySKU(sku, true);
+                        const theirAssetids = theirInventory.findBySKU(sku, true, false);
                         const theirAssetidsCount = theirAssetids.length;
 
                         if (amount > theirAssetidsCount) {

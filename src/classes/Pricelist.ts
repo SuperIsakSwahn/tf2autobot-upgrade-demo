@@ -384,9 +384,9 @@ export default class Pricelist extends EventEmitter {
     get isUseCustomPricer(): boolean {
         return !(
             this.options.customPricerUrl === undefined ||
-            this.options.customPricerUrl === '' || // empty == default which is api2.prices.tf
-            this.options.customPricerUrl === 'https://api.prices.tf' ||
-            this.options.customPricerUrl === 'https://api2.prices.tf'
+            this.options.customPricerUrl === '' || // empty == default which is pricedb.io
+            this.options.customPricerUrl === 'https://pricedb.io' ||
+            this.options.customPricerUrl === 'https://pricedb.io/api'
         );
     }
 
@@ -590,7 +590,7 @@ export default class Pricelist extends EventEmitter {
                 this.globalKeyPrices = {
                     buy: newPrices.buy,
                     sell: newPrices.sell,
-                    src: this.isUseCustomPricer ? 'customPricer' : 'ptf',
+                    src: this.isUseCustomPricer ? 'customPricer' : 'pricedb',
                     time: price.time
                 };
 
@@ -628,7 +628,7 @@ export default class Pricelist extends EventEmitter {
                     this.globalKeyPrices = {
                         buy: newPrices.buy,
                         sell: newPrices.sell,
-                        src: this.isUseCustomPricer ? 'customPricer' : 'ptf',
+                        src: this.isUseCustomPricer ? 'customPricer' : 'pricedb',
                         time: item.time
                     };
 
@@ -979,7 +979,7 @@ export default class Pricelist extends EventEmitter {
                         this.globalKeyPrices = {
                             buy: newPrices.buy,
                             sell: newPrices.sell,
-                            src: this.isUseCustomPricer ? 'customPricer' : 'ptf',
+                            src: this.isUseCustomPricer ? 'customPricer' : 'pricedb',
                             time: time
                         };
                         log.debug(`Key rate is set based current key prices.`, this.globalKeyPrices);
@@ -1034,7 +1034,7 @@ export default class Pricelist extends EventEmitter {
             this.globalKeyPrices = {
                 buy: entryKey.buy,
                 sell: entryKey.sell,
-                src: entryKey.time !== null ? (this.isUseCustomPricer ? 'customPricer' : 'ptf') : 'manual',
+                src: entryKey.time !== null ? (this.isUseCustomPricer ? 'customPricer' : 'pricedb') : 'manual',
                 time: entryKey.time
             };
         } else {
@@ -1054,7 +1054,7 @@ export default class Pricelist extends EventEmitter {
             this.globalKeyPrices = {
                 buy: temporaryKeyPrices.buy,
                 sell: temporaryKeyPrices.sell,
-                src: this.isUseCustomPricer ? 'customPricer' : 'ptf',
+                src: this.isUseCustomPricer ? 'customPricer' : 'pricedb',
                 time: 1614000000
             };
 
@@ -1098,7 +1098,7 @@ export default class Pricelist extends EventEmitter {
                     this.globalKeyPrices = {
                         buy: updatedKeyPrices.buy,
                         sell: updatedKeyPrices.sell,
-                        src: this.isUseCustomPricer ? 'customPricer' : 'ptf',
+                        src: this.isUseCustomPricer ? 'customPricer' : 'pricedb',
                         time: keyPrices.time
                     };
                 }
@@ -1405,7 +1405,7 @@ export default class Pricelist extends EventEmitter {
                 this.globalKeyPrices = {
                     buy: newPrices.buy,
                     sell: newPrices.sell,
-                    src: this.isUseCustomPricer ? 'customPricer' : 'ptf',
+                    src: this.isUseCustomPricer ? 'customPricer' : 'pricedb',
                     time: data.time
                 };
             }

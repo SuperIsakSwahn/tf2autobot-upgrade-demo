@@ -1793,6 +1793,7 @@ export default function sendWebHookPriceUpdateV1(
     isCustomPricer: boolean,
     botInfo: BotInfo
 ): void {
+    if (!options.miscSettings.autopricerMessages.enable) return;
     const baseItemData = schema.getItemBySKU(sku);
     const item = SKU.fromString(sku);
     const itemName = schema.getName(item, false);

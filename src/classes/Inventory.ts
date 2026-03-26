@@ -147,52 +147,57 @@ export default class Inventory {
             this.bot.strangeParts,
             this.which
         );
+
         this.nonTradable = Inventory.createDictionary(
             items.filter(item => !item.tradable),
             this.bot,
             this.bot.strangeParts,
             this.which
         );
+
+        // 🔥 Build O(1) lookup map
+        this.assetIdToSku = {};
+
+        const buildMap = (dict: Record<string, { id: string }[]>) => {
+            for (const sku in dict) {
+                const items = dict[sku];
+                for (const item of items) {
+                    this.assetIdToSku[item.id] = sku;
+                }
+            }
+        };
+
+        buildMap(this.tradable);
+        buildMap(this.nonTradable);
     }
+
+    assetIdToSku: Record<string, string>;
 
     findByAssetid(assetid: string): string | null {
-        for (const sku in this.tradable) {
-            if (!Object.prototype.hasOwnProperty.call(this.tradable, sku)) {
-                continue;
-            }
-
-            if (!this.tradable[sku].find(item => item.id === assetid)) {
-                continue;
-            }
-
-            return sku;
-        }
-
-        for (const sku in this.nonTradable) {
-            if (!Object.prototype.hasOwnProperty.call(this.nonTradable, sku)) {
-                continue;
-            }
-
-            if (!this.nonTradable[sku].find(item => item.id === assetid)) {
-                continue;
-            }
-
-            return sku;
-        }
-
-        return null;
+        return this.assetIdToSku[assetid] ?? null;
     }
+    findBySKU(sku: string, tradableOnly = true, filter = true): string[] {
+        const isSafe = (item: DictItem): boolean => {
+            if (!item) return false;
+            if (!filter) return true;
+            return item.hv === undefined || Object.keys(item.hv).length === 0;
+        };
 
-    findBySKU(sku: string, tradableOnly = true): string[] {
-        const tradable = (this.tradable[sku] || []).map(item => item?.id);
+        const tradableItems = this.tradable[sku] || [];
+        const tradable = tradableItems
+            .filter(isSafe)
+            .map(item => item.id);
+
         if (tradableOnly) {
-            // Copies the array
-            return tradable.slice(0);
+            return tradable;
         }
 
-        const nonTradable = (this.nonTradable[sku] || []).map(item => item?.id);
+        const nonTradableItems = this.nonTradable[sku] || [];
+        const nonTradable = nonTradableItems
+            .filter(isSafe)
+            .map(item => item.id);
 
-        return nonTradable.concat(tradable).slice(0);
+        return nonTradable.concat(tradable);
     }
 
     findByPartialSku(partialSku: string, elevatedStrange = false): string[] {
@@ -234,7 +239,7 @@ export default class Inventory {
             assetidInPricelist && assetidInPricelist[sku] ? Object.keys(assetidInPricelist[sku]).length : 0;
         if (includeNonNormalized && !['5021;6', '5002;6', '5001;6', '5000;6'].includes(sku)) {
             // This is true only on src/lib/tools/summarizeOffer.ts @ L180, and src/classes/InventoryManager.ts @ L69
-            let accAmount = this.findBySKU(sku, tradableOnly).length;
+            let accAmount = this.findBySKU(sku, tradableOnly, false).length;
 
             const optNormalize = this.bot.options.normalize;
             const normFestivized = optNormalize.festivized;
@@ -256,7 +261,7 @@ export default class Inventory {
                 ) {
                     const item = SKU.fromString(sku);
                     item.festive = true;
-                    accAmount += this.findBySKU(SKU.fromObject(item), tradableOnly).length;
+                    accAmount += this.findBySKU(SKU.fromObject(item), tradableOnly, false).length;
                 }
 
                 // Painted
@@ -268,7 +273,7 @@ export default class Inventory {
                 ) {
                     const paintPartialSKU = Object.values(this.bot.schema.paints);
                     for (const pSKU of paintPartialSKU) {
-                        accAmount += this.findBySKU(`${sku};p${pSKU}`, tradableOnly).length;
+                        accAmount += this.findBySKU(`${sku};p${pSKU}`, tradableOnly, false).length;
                     }
                 }
 
@@ -281,7 +286,7 @@ export default class Inventory {
                 ) {
                     const item = SKU.fromString(sku);
                     item.quality2 = 11;
-                    accAmount += this.findBySKU(SKU.fromObject(item), tradableOnly).length;
+                    accAmount += this.findBySKU(SKU.fromObject(item), tradableOnly, false).length;
                 }
             }
 
@@ -289,7 +294,7 @@ export default class Inventory {
         }
 
         // else just return amount
-        const amount = this.findBySKU(sku, tradableOnly).length;
+        const amount = this.findBySKU(sku, tradableOnly, false).length;
         return amount === 1 && amountToDeduct === 1 ? 1 : amount - amountToDeduct;
     }
 
@@ -527,7 +532,7 @@ export default class Inventory {
         const ke: PartialSKUWithMention = {};
         const ks: PartialSKUWithMention = {};
         const p: PartialSKUWithMention = {};
-
+        const g: PartialSKUWithMention = {};
         for (const content of econ.descriptions) {
             /**
              * For Strange Parts, example: "(Kills During Halloween: 0)"
@@ -538,6 +543,19 @@ export default class Inventory {
                 .replace(/: \d+\)/g, '')
                 .trim();
 
+
+            if (
+                content.value.startsWith('Date Received:')
+            ) {
+                const match = content.value.match(/\b(20\d{2})\b/);
+
+                if (match) {
+                    const year = parseInt(match[1], 10);
+                    if (year <= 2015) {
+                        g['og'] = true;
+                    }
+                }
+            }
             if (
                 content.value.startsWith('Halloween:') &&
                 content.value.endsWith('(spell only active during event)') &&
@@ -607,9 +625,9 @@ export default class Inventory {
             p['p5801378'] = true; // Legacy Paint - no exception?
         }
 
-        [s, sp, ke, ks, p].forEach((attachment, i) => {
+        [s, sp, ke, ks, p, g].forEach((attachment, i) => {
             if (Object.keys(attachment).length > 0) {
-                attributes[['s', 'sp', 'ke', 'ks', 'p'][i]] = attachment;
+                attributes[['s', 'sp', 'ke', 'ks', 'p', 'g'][i]] = attachment;
             }
         });
 

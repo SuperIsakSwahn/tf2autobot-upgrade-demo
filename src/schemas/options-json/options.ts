@@ -455,6 +455,15 @@ export const optionsSchema: jsonschema.Schema = {
                     required: ['enable'],
                     additionalProperties: false
                 },
+                readOnlyPricelist: {
+                    $ref: '#/definitions/only-enable'
+                },
+                autopricerMessages: {
+                    $ref: '#/definitions/only-enable'
+                },
+                systemMessages: {
+                    $ref: '#/definitions/only-enable'
+                },
                 startHalted: {
                     $ref: '#/definitions/only-enable'
                 },
@@ -915,6 +924,9 @@ export const optionsSchema: jsonschema.Schema = {
                         },
                         painted: {
                             type: 'string'
+                        },
+                        gifted: {
+                            type: 'string'
                         }
                     },
                     required: [
@@ -932,7 +944,8 @@ export const optionsSchema: jsonschema.Schema = {
                         'strangeParts',
                         'killstreaker',
                         'sheen',
-                        'painted'
+                        'painted',
+                        'gifted'
                     ],
                     additionalProperties: false
                 }
@@ -1217,6 +1230,9 @@ export const optionsSchema: jsonschema.Schema = {
                         showPainted: {
                             type: 'boolean'
                         },
+                        showGifted: {
+                            type: 'boolean'
+                        },
                         customText: {
                             type: 'object',
                             properties: {
@@ -1235,6 +1251,9 @@ export const optionsSchema: jsonschema.Schema = {
                                 painted: {
                                     type: 'string'
                                 },
+                                gifted: {
+                                    type: 'string'
+                                },
                                 separator: {
                                     type: 'string'
                                 },
@@ -1248,6 +1267,7 @@ export const optionsSchema: jsonschema.Schema = {
                                 'killstreaker',
                                 'sheen',
                                 'painted',
+                                'gifted',
                                 'separator',
                                 'ender'
                             ],
@@ -1260,6 +1280,7 @@ export const optionsSchema: jsonschema.Schema = {
                         'showKillstreaker',
                         'showSheen',
                         'showPainted',
+                        'showGifted',
                         'customText'
                     ],
                     additionalProperties: false

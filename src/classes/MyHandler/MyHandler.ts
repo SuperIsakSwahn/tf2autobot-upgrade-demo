@@ -1228,7 +1228,7 @@ export default class MyHandler extends Handler {
                             console.log("isFestivized is: ", isFestivized);
                             let isCosmetic = false;
                             const isKitOrFabricator = id.includes(';td-');
-                                 if (id.includes(';kt-1') && !isKitOrFabricator) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code
+                                 if (id.includes(';kt-1') && !isKitOrFabricator) value += 90; // 10 ref fallback, quite low, adjustable by just changing this code
                             else if (id.includes(';kt-2') && !isKitOrFabricator) value += 180;
                             else if (id.includes(';kt-3') && !isKitOrFabricator) value += 360;
                             if (isAustralium) value += Currencies.toScrap(sellKeyPrice.metal * 5);
@@ -2818,6 +2818,8 @@ export default class MyHandler extends Handler {
          *
          * This will also save the "name" property. I think it's okay.
          */
+        if (this.bot.options.miscSettings.readOnlyPricelist.enable) return;
+
         files.writeFile(this.paths.files.pricelist, pricelist, true).catch(err => {
             log.warn('Failed to save pricelist: ', err);
         });

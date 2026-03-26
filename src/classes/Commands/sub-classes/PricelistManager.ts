@@ -8,7 +8,7 @@ import pluralize from 'pluralize';
 import dayjs from 'dayjs';
 import * as timersPromises from 'timers/promises';
 import { UnknownDictionary, UnknownDictionaryKnownValues } from '../../../types/common';
-import { removeLinkProtocol, getItemFromParams } from '../functions/utils';
+import { getItemFromParams, isValidItemInput, removeLinkProtocol } from "../functions/utils";
 import Bot from '../../Bot';
 import CommandParser from '../../CommandParser';
 import Pricelist, { Entry, EntryData, PricelistChangedSource } from '../../Pricelist';
@@ -33,9 +33,22 @@ export default class PricelistManagerCommands {
     }
 
     async addCommand(steamID: SteamID, message: string): Promise<void> {
-        if (!(message.includes('item=') || message.includes('sku=') || message.includes('name=') ||
-            message.includes('id=') || message.includes('defindex='))) message = `item=${message}`;
-        const params = CommandParser.parseParams(CommandParser.removeCommand(removeLinkProtocol(message)));
+        const parts = message.trim().split(/\s+/, 2);
+        const command = parts[0]; // e.g. "!u" or "!update"
+        const rest = message.slice(command.length).trim(); // everything after the first word
+        const extracted = this.bot.extractItem(rest);
+        message = `${command} ${extracted}`;
+        const params = CommandParser.parseParams(
+            CommandParser.removeCommand(removeLinkProtocol(message))
+        );
+
+        if (params.item && !isValidItemInput(params.item)) {
+            return this.bot.sendMessage(
+                steamID,
+                `❌ That doesn’t look like an item name.\nUse !check <item name> or !check <sku>.`
+            );
+        }
+
         if (params.enabled === undefined) {
             params.enabled = true;
         }
@@ -57,7 +70,6 @@ export default class PricelistManagerCommands {
                 params.intent = intent;
             }
         }
-
 
         if (typeof params.buy === 'object') {
             params.buy.keys = params.buy.keys || 0;
@@ -145,6 +157,27 @@ export default class PricelistManagerCommands {
 
         if (params.isPartialPriced === undefined) {
             params.isPartialPriced = false;
+        }
+        /*
+        // parse priority from command params
+        if (params.priority === undefined) {
+            params.priority = 0;
+        } else {
+         */
+
+// parse priority from command params
+        if (params.priority !== undefined) {
+            // Allow string or number, convert to integer
+            if (typeof params.priority === 'string') {
+                const p = Number(params.priority);
+                if (Number.isNaN(p)) {
+                    return this.bot.sendMessage(steamID, '❌ "priority" must be a number');
+                }
+                params.priority = p;
+            }
+            if (typeof params.priority !== 'number') {
+                return this.bot.sendMessage(steamID, '❌ "priority" must be a number');
+            }
         }
 
         if (params.sku !== undefined && !testPriceKey(params.sku as string)) {
@@ -215,175 +248,15 @@ export default class PricelistManagerCommands {
             params.id = String(params.id);
             // force intent sell for assetid added
             params.intent = 1;
+            params.listings = 1;
         }
         priceKey = priceKey ? priceKey : params.sku;
         return this.bot.pricelist
             .addPrice({ entryData: params as EntryData, emitChange: true, src: PricelistChangedSource.Command })
             .then(entry => {
-                this.bot.sendMessage(
-                    steamID,
-                    `✅ Added "${entry.name}" (${priceKey})` + generateAddedReply(this.bot, isPremium, entry)
-                );
-            })
-            .catch(err => {
-                this.bot.sendMessage(steamID, `❌ Failed to add the item to the pricelist: ${(err as Error).message}`);
-            });
-    }
-    async addFile(steamID: SteamID, message: string): Promise<void> {
-        const params = CommandParser.parseParams(CommandParser.removeCommand(removeLinkProtocol(message)));
-        if (params.enabled === undefined) {
-            params.enabled = true;
-        }
-
-        if (params.min === undefined) {
-            params.min = 0;
-        }
-
-        if (params.max === undefined) {
-            params.max = 1;
-        }
-
-        if (params.intent === undefined) {
-            params.intent = 2;
-        } else if (typeof params.intent === 'string') {
-            const intent = ['buy', 'sell', 'bank'].indexOf(params.intent.toLowerCase());
-
-            if (intent !== -1) {
-                params.intent = intent;
-            }
-        }
-
-        if (typeof params.buy === 'object') {
-            params.buy.keys = params.buy.keys || 0;
-            params.buy.metal = params.buy.metal || 0;
-
-            if (params.autoprice === undefined) {
-                params.autoprice = false;
-            }
-        } else if (typeof params.buy !== 'object' && typeof params.sell === 'object') {
-            params['buy'] = {
-                keys: 0,
-                metal: 0
-            };
-        }
-
-        if (typeof params.sell === 'object') {
-            params.sell.keys = params.sell.keys || 0;
-            params.sell.metal = params.sell.metal || 0;
-
-            if (params.autoprice === undefined) {
-                params.autoprice = false;
-            }
-        } else if (typeof params.sell !== 'object' && typeof params.buy === 'object') {
-            params['sell'] = {
-                keys: 0,
-                metal: 0
-            };
-        }
-
-        const isPremium = this.bot.handler.getBotInfo.premium;
-        if (params.promoted !== undefined) {
-            if (!isPremium) {
-                return this.bot.sendMessage(
-                    steamID,
-                    `❌ This account is not Backpack.tf Premium. You can't use "promoted" parameter.`
-                );
-            }
-
-            if (typeof params.promoted === 'boolean') {
-                if (params.promoted === true) {
-                    params.promoted = 1;
-                } else {
-                    params.promoted = 0;
-                }
-            } else {
-                if (typeof params.promoted !== 'number') {
-                    return this.bot.sendMessage(
-                        steamID,
-                        '❌ "promoted" parameter must be either 0 (false) or 1 (true)'
-                    );
-                } else if (params.promoted < 0 || params.promoted > 1) {
-                    return this.bot.sendMessage(
-                        steamID,
-                        '❌ "promoted" parameter must be either 0 (false) or 1 (true)'
-                    );
-                }
-            }
-        } else {
-            params['promoted'] = 0;
-        }
-
-        if (typeof params.note === 'object') {
-            params.note.buy = params.note.buy || null;
-            params.note.sell = params.note.sell || null;
-        }
-
-        if (params.note === undefined) {
-            // If note parameter is not defined, set both note.buy and note.sell to null.
-            params['note'] = { buy: null, sell: null };
-        }
-
-        if (params.group && typeof params.group !== 'string') {
-            // if group parameter is defined, convert anything to string
-            params.group = String(params.group);
-        }
-
-        if (params.group === undefined) {
-            // If group parameter is not defined, set it to null.
-            params['group'] = 'all';
-        }
-
-        if (params.autoprice === undefined) {
-            params.autoprice = true;
-        }
-
-        if (params.isPartialPriced === undefined) {
-            params.isPartialPriced = false;
-        }
-
-        if (params.sku !== undefined && !testPriceKey(params.sku as string)) {
-            return this.bot.sendMessage(steamID, `❌ "sku" should not be empty or wrong format.`);
-        }
-
-        if (params.sku === undefined) {
-            if (params.item !== undefined) {
-                params.sku = this.bot.schema.getSkuFromName(params.item as string);
-
-                if ((params.sku as string).includes('null') || (params.sku as string).includes('undefined')) {
-                    return this.bot.sendMessage(
-                        steamID,
-                        `❌ The sku for "${params.item as string}" returned "${params.sku as string}".` +
-                        `\nIf the item name is correct, please let us know in our Discord server.`
-                    );
-                }
-
-                delete params.item;
-            } else {
-                const item = getItemFromParams(steamID, params, this.bot);
-
-                if (item === null) {
-                    return this.bot.sendMessage(steamID, `❌ No item found to match parameters given check sku or id.`);
-                }
-
-                params.sku = SKU.fromObject(item);
-            }
-        }
-
-        let priceKey: string = undefined;
-        if (params.id) {
-            priceKey = String(params.id);
-            params.id = String(params.id);
-            // force intent sell for assetid added
-            params.intent = 1;
-        }
-        priceKey = priceKey ? priceKey : params.sku;
-        return this.bot.pricelist
-            .addPrice({ entryData: params as EntryData, emitChange: true, src: PricelistChangedSource.Command })
-            .then(entry => {
-                this.bot.sendMessage(
-                    steamID,
-                    `✅ Added "${entry.name}" (${priceKey})` + generateAddedReply(this.bot, isPremium, entry)
-                );
+                let message = `✅ Added "${entry.name}" (${priceKey})` + generateAddedReply(this.bot, isPremium, entry);
+                if ((entry as any)._usedFallback) message += '\nNOTE: The fallback pricer was used for this item, please add the item to your own pricer or else you might miss out on price changes.';
+                this.bot.sendMessage(steamID, message);
             })
             .catch(err => {
                 this.bot.sendMessage(steamID, `❌ Failed to add the item to the pricelist: ${(err as Error).message}`);

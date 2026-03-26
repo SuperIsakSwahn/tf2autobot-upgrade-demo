@@ -472,9 +472,9 @@ export default class ManagerCommands {
         });
     }
 
-    stopCommand(steamID: SteamID): void {
-        this.bot.sendMessage(steamID, '⌛ Stopping...');
-
+    async stopCommand(steamID: SteamID): Promise<void> {
+        this.bot.sendMessage(steamID, '⌛ Stopping and halting...');
+        await this.bot.halt();
         this.bot.botManager.stopProcess().catch(err => {
             log.warn('Error occurred while trying to stop: ', err);
             this.bot.sendMessage(steamID, `❌ An error occurred while trying to stop: ${(err as Error).message}`);
@@ -898,6 +898,7 @@ export default class ManagerCommands {
     }
 
     updaterepoCommand(steamID: SteamID): void {
+        return this.bot.sendMessage(steamID, '❌ This command doesn\'t work yet.');
         if (!this.bot.isCloned()) {
             return this.bot.sendMessage(steamID, '❌ You did not clone the bot from Github.');
         }
@@ -918,7 +919,7 @@ export default class ManagerCommands {
                 `❌ The current OS you're running the bot with is not yet supported. OS: ${process.platform}`
             );
         }
-
+        /*
         this.bot.checkForUpdates
             .then(async ({ hasNewVersion, newVersionIsMajor }) => {
                 if (!hasNewVersion) {
@@ -987,5 +988,7 @@ export default class ManagerCommands {
                 }
             })
             .catch(err => this.bot.sendMessage(steamID, `❌ Failed to check for updates: ${JSON.stringify(err)}`));
+
+         */
     }
 }

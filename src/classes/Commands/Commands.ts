@@ -273,7 +273,7 @@ export default class Commands {
             } else if (command === 'clearfriends' && isAdmin) {
                 this.manager.clearFriendsCommand(steamID);
             } else if (command === 'stop' && isAdmin) {
-                this.manager.stopCommand(steamID);
+                await this.manager.stopCommand(steamID);
             } else if (command === 'halt' && isAdmin) {
                 await this.manager.haltCommand(steamID);
             } else if (command === 'unhalt' && isAdmin) {
@@ -2744,32 +2744,20 @@ export default class Commands {
         mainItem = mainItem.replace('pro ks ', 'professional killstreak ');
         mainItem = mainItem.replace('spec ks ', 'specialized killstreak ');
         mainItem = mainItem.replace('aussie ', 'australium ');
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
-        console.log('mainItem: ', mainItem);
+        log.debug('mainItem: ', mainItem);
 
         // --- Recombine nc prefix if it exists ---
         if (ncPrefix) mainItem = `${ncPrefix}${mainItem}`.trim();
 
         // --- Build parse string ---
         let parseString = mainItem;
-        console.log('parseString: ', parseString)
+        log.debug('parseString: ', parseString)
         if (!(parseString.includes('item=') || parseString.includes('sku=') ||
             parseString.includes('name=') || parseString.includes('id=') ||
             parseString.includes('defindex='))) {
             parseString = `item=${mainItem}`;
         }
-        console.log('parseString: ', parseString)
-        console.log('mainItem: ', mainItem)
+        log.debug('parseString: ', parseString)
 
         if (amount !== undefined) parseString += `&amount=${amount}`;
 

@@ -186,12 +186,9 @@ export default class BotManager {
                 this.stop(null);
                 return resolve(true);
             }
-
             if (process.env.pm_id === undefined) {
                 return resolve(false);
             }
-
-            log.warn('Restart has been initialized, restarting...');
 
             pm2.restart(process.env.pm_id, err => {
                 if (err) {
@@ -211,7 +208,12 @@ export default class BotManager {
 
             // Stop scheduling future polls (does not cancel an in-flight poll)
             this.bot.manager.pollInterval = -1;
+            /*
+            if (this.bot.listings) {
+                this.bot.listings.shuttingDown = true;
+            }
 
+             */
             // Stop reading Discord
             this.bot.discordBot?.stop();
 
@@ -237,7 +239,6 @@ export default class BotManager {
         // Disconnect from socket server to stop price updates
         this.pricer.shutdown(!!this.bot?.options.enableSocket);
     }
-
     private installPollInFlightTracker(): void {
         if (!this.bot) return;
 

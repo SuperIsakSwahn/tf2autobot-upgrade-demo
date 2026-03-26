@@ -141,7 +141,7 @@ export default class ApiCart extends Cart {
                     }
 
                     let amount = this.getOurCount(sku);
-                    const ourAssetids = ourInventory.findBySKU(sku, true);
+                    const ourAssetids = ourInventory.findBySKU(sku, true, false);
                     const ourAssetidsCount = ourAssetids.length;
 
                     if (amount > ourAssetidsCount) {

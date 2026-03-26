@@ -313,7 +313,7 @@ export default class Listings {
             if (isAssetId && null !== inventory.findByAssetid(priceKey)) {
                 assetids = [priceKey];
             } else {
-                const foundAssetIds = inventory.findBySKU(priceKey, true);
+                const foundAssetIds = inventory.findBySKU(priceKey, true, false);
                 assetids = foundAssetIds.filter(
                     assetId => this.bot.pricelist.hasPrice({ priceKey: assetId, onlyEnabled: false }) === false
                 );
@@ -470,8 +470,8 @@ export default class Listings {
                     })
                     .sort((a, b) => {
                         return (
-                            (Pricelist.isAssetId(b) ? [inventory.findByAssetid(b)] : inventory.findBySKU(b)).length -
-                            (Pricelist.isAssetId(a) ? [inventory.findByAssetid(a)] : inventory.findBySKU(a)).length
+                            (Pricelist.isAssetId(b) ? [inventory.findByAssetid(b)] : inventory.findBySKU(b, true, false)).length -
+                            (Pricelist.isAssetId(a) ? [inventory.findByAssetid(a)] : inventory.findBySKU(a, true, false)).length
                         );
                     });
 

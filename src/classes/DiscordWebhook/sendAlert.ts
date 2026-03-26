@@ -150,26 +150,32 @@ export default function sendAlert(
         description = msg;
         color = '32768'; // green
     } else if (type === 'autoUpdatePartialPriceSuccess') {
+        if (!bot.options.miscSettings.autopricerMessages.enable) return;
         title = '✅ Automatically update partially priced item';
         description = msg;
         color = '32768'; // green
     } else if (type === 'autoUpdatePartialPriceFailed') {
+        if (!bot.options.miscSettings.autopricerMessages.enable) return;
         title = 'Failed update item prices (Partial price update)';
         description = msg;
         color = '16711680'; // red
     } else if (type === 'autoUpdatePartialPriceFailedToDisable') {
+        if (!bot.options.miscSettings.autopricerMessages.enable) return;
         title = 'Failed disabling item (Partial price update failed)';
         description = msg;
         color = '16711680'; // red
     } else if (type === 'autoResetPartialPrice') {
+        if (!bot.options.miscSettings.autopricerMessages.enable) return;
         title = '✅ Automatically reset partially priced item';
         description = msg;
         color = '8323327'; // purple
     } else if (type === 'onBulkUpdatePartialPriced') {
+        if (!bot.options.miscSettings.autopricerMessages.enable) return;
         title = '✅ Partial price update - bulk';
         description = msg;
         color = '16776960'; // yellow
     } else if (type === 'autoResetPartialPriceBulk') {
+        if (!bot.options.miscSettings.autopricerMessages.enable) return;
         title = '✅ Automatically reset partially priced item - bulk';
         description = msg;
         color = '8323327'; // purple
@@ -182,6 +188,7 @@ export default function sendAlert(
         description = msg;
         color = '16711680'; // red
     } else if (type.includes('autokeys-')) {
+        if (!bot.options.miscSettings.autopricerMessages.enable) return;
         title =
             type === 'autokeys-failedToDisable'
                 ? 'Failed to disable Autokeys'
@@ -220,10 +227,12 @@ export default function sendAlert(
         content = items[0]; // offer id
         color = '16711680'; // red
     } else if (type === 'isPartialPriced') {
+        if (!bot.options.miscSettings.autopricerMessages.enable) return;
         title = 'Partial price update';
         description = msg;
         color = '16776960'; // yellow
     } else if (type === 'failedToUpdateOldPrices') {
+        if (!bot.options.miscSettings.autopricerMessages.enable) return;
         title = 'Failed to update old prices';
         description =
             `Failed to update old prices (probably because autoprice is set to true but item does not exist` +

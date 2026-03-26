@@ -1,7 +1,7 @@
 import SteamID from 'steamid';
 import pluralize from 'pluralize';
 import SKU from '@tf2autobot/tf2-sku';
-import SchemaManager from '@tf2autobot/tf2-schema';
+import SchemaManager, { Schema } from "@tf2autobot/tf2-schema";
 import levenshtein from 'js-levenshtein';
 import { UnknownDictionaryKnownValues } from '../../../types/common';
 import { MinimumItem } from '../../../types/TeamFortress2';
@@ -10,67 +10,221 @@ import Pricelist, { Entry } from '../../Pricelist';
 import { genericNameAndMatch } from '../../Inventory';
 import { fixItem } from '../../../lib/items';
 import { testPriceKey } from '../../../lib/tools/export';
+export function isValidItemInput(input: unknown): input is string {
+    if (typeof input !== 'string') {
+        return false;
+    }
+
+    const trimmed = input.trim();
+
+    if (trimmed.length === 0) {
+        return false;
+    }
+
+    // Reject pure numbers (integers or decimals)
+    if (/^\d+(\.\d+)?$/.test(trimmed)) {
+        return false;
+    }
+
+    return true;
+}
 
 export function getItemAndAmount(
     steamID: SteamID,
     message: string,
     bot: Bot,
     prefix: string,
-    from?: 'buy' | 'sell' | 'buycart' | 'sellcart'
+    from?: 'buy' | 'b' | 'sell' | 's' | 'buyfile'| 'bfile'| 'files'| 'stockfiles' | 'buycart' | 'sellcart'
 ): { match: Entry; priceKey: string; amount: number } | null {
     const parsedMessage = parseItemAndAmountFromMessage(message);
-    const name = parsedMessage.name;
+    let name = parsedMessage.name.trim();
     let amount = parsedMessage.amount;
 
-    if (['!price', '!sellcart', '!buycart', '!sell', '!buy', '!pc', '!s', '!b'].includes(name)) {
-        bot.sendMessage(
-            steamID,
-            '⚠️ You forgot to add a name. Here\'s an example: "' +
-            (name.includes('!price')
-                ? '!price'
-                : name.includes('!sellcart')
-                    ? '!sellcart'
-                    : name.includes('!buycart')
-                        ? '!buycart'
-                        : name.includes('!sell')
-                            ? '!sell'
-                            : name.includes('!buy')
-                                ? '!buy'
-                                : name.includes('!pc')
-                                    ? '!pc'
-                                    : name.includes('!s')
-                                        ? '!s'
-                                        : '!b') +
-            ' Team Captain"'
-        );
-        return null;
+    const commands = ['!price', '!sellcart', '!buycart', '!sell', '!buy', '!pc', '!s', '!b'];
+
+// --- Handle blank / command-only / number-only cases first ---
+    if (name === '' || commands.includes(name)) {
+        amount = parsedMessage.amount || amount;
+        name = 'Mann Co. Supply Crate Key';
+    } else if (/^\d+$/.test(name)) {
+        amount = parseInt(name, 10);
+        name = 'Mann Co. Supply Crate Key';
     }
+
+// --- Always normalize craftability shorthands first ---
+    name = name.replace(/^(uncraft|uncraftable|non[ -]?craftable|nc)\b/i, 'Non-Craftable').trim();
+
+// --- Special case: "key"/"keys" shortcut ---
+    if (/^keys?$/i.test(name)) {
+        name = 'Mann Co. Supply Crate Key';
+    }
+
+
 
     let priceKey: string;
-    let match = testPriceKey(name)
-        ? bot.pricelist.getPriceBySkuOrAsset({ priceKey: name, onlyEnabled: true })
-        : bot.pricelist.searchByName(name, true);
+    let match;
+    if (['s', 'sell', 'scart', 'sellcart'].includes(from)) {
+        match = bot.pricelist.getPriceBySkuOrAsset({ priceKey: name, onlyEnabled: true });
+    } else {
+        match = bot.pricelist.getPriceBySkuOrAsset({ priceKey: name, onlyEnabled: true });
+    }
+    if (match === null) {
+        match = bot.pricelist.searchByName(name, true);
+    }
+
+    // If direct match was found, perform the same 'from' checks as original code
     if (match !== null && match instanceof Entry && typeof from !== 'undefined') {
         const opt = bot.options.commands;
-
-        if (opt[from].enable === false && opt[from].disableForSKU.includes(match.sku)) {
-            const custom = opt[from].customReply.disabledForSKU;
-            bot.sendMessage(
-                steamID,
-                custom ? custom.replace(/%itemName%/g, match.name) : `❌ ${from} command is disabled for ${match.name}.`
-            );
-
-            return null;
-        }
-
-        if (Pricelist.isAssetId(name)) {
-            priceKey = name;
-            amount = 1;
-        } else {
-            priceKey = match.sku;
+        if (match instanceof Entry) {
+            if (opt[from].enable === false && opt[from].disableForSKU.includes(match.sku)) {
+                const custom = opt[from].customReply.disabledForSKU;
+                bot.sendMessage(
+                    steamID,
+                    custom ? custom.replace(/%itemName%/g, match.name) : `❌ ${from} command is disabled for ${match.name}.`
+                );
+                return null;
+            }
+            if (Pricelist.isAssetId(name)) {
+                priceKey = name;
+                amount = 1;
+            } else {
+                priceKey = match.sku;
+            }
         }
     }
 
+    // --- Sequential fallbacks (one at a time). Try each, re-searching after each transform. ---
+    if (match === null) {
+        const trySearch = (candidateName: string): Entry | string[] | null => {
+            return testPriceKey(candidateName)
+                ? bot.pricelist.getPriceBySkuOrAsset({ priceKey: candidateName, onlyEnabled: true })
+                : bot.pricelist.searchByName(candidateName, true);
+        };
+        /*
+        TS2322: Type 'Entry | string[]' is not assignable to type 'Entry | Entry[]'. Type 'string[]' is not assignable to type 'Entry | Entry[]'. Type 'string[]' is not assignable to type 'Entry[]'. Type 'string' is not assignable to type 'Entry'.
+         */
+
+        // Keep original name untouched for each check (we only commit when a fallback finds a match)
+
+        // Fallback 1: leading uncraftable / non craftable / nc -> Non-Craftable
+        if (/^(uncraftable|non[ -]?craftable|nc)\b/i.test(name)) {
+            const candidate = name.replace(/^(uncraftable|non[ -]?craftable|nc)\b/i, 'Non-Craftable').trim();
+            const retry = trySearch(candidate);
+            if (retry !== null && !(Array.isArray(retry))) {
+                // check 'from' restrictions
+                if (typeof from !== 'undefined') {
+                    const opt = bot.options.commands;
+                    if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
+                        const custom = opt[from].customReply.disabledForSKU;
+                        bot.sendMessage(
+                            steamID,
+                            custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
+                        );
+                        return null;
+                    }
+                }
+                match = retry;
+                name = candidate;
+                priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
+            }
+        }
+
+        // Fallback 2: tod -> Tour of Duty Ticket
+        if (match === null && /\btod\b/i.test(name)) {
+            const candidate = name.replace(/\btod\b/i, 'Tour of Duty Ticket').trim(); // candidate:  Non-Craftable Tour of Duty Ticket
+            const retry = trySearch(candidate);
+            if (retry !== null && !(Array.isArray(retry))) {
+                if (typeof from !== 'undefined') {
+                    const opt = bot.options.commands;
+                    if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
+                        const custom = opt[from].customReply.disabledForSKU;
+                        bot.sendMessage(
+                            steamID,
+                            custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
+                        );
+                        return null;
+                    }
+                }
+                match = retry;
+                name = candidate;
+                priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
+            }
+        }
+
+        // Fallback 3: key / keys -> Mann Co. Supply Crate Key
+        if (match === null && /\bkeys?\b/i.test(name)) {
+            const candidate = name.replace(/\bkeys?\b/i, 'Mann Co. Supply Crate Key').trim();
+            const retry = trySearch(candidate);
+            if (retry !== null && !(Array.isArray(retry))) {
+                if (typeof from !== 'undefined') {
+                    const opt = bot.options.commands;
+                    if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
+                        const custom = opt[from].customReply.disabledForSKU;
+                        bot.sendMessage(
+                            steamID,
+                            custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
+                        );
+                        return null;
+                    }
+                }
+                match = retry;
+                name = candidate;
+                priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
+            }
+        }
+
+        // Fallback 4: bp -> Backpack Expander
+        if (match === null && /\bbp\b/i.test(name)) {
+            const candidate = name.replace(/\bbp\b/i, 'Backpack Expander').trim();
+            const retry = trySearch(candidate);
+            if (retry !== null && !(Array.isArray(retry))) {
+                if (typeof from !== 'undefined') {
+                    const opt = bot.options.commands;
+                    if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
+                        const custom = opt[from].customReply.disabledForSKU;
+                        bot.sendMessage(
+                            steamID,
+                            custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
+                        );
+                        return null;
+                    }
+                }
+                match = retry;
+                name = candidate;
+                priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
+            }
+        }
+
+        // Fallback 5: trailing number as amount (only if previous attempts failed)
+        if (match === null) {
+            const parts = name.split(' ').filter(Boolean);
+            const last = parts[parts.length - 1];
+            if (/^\d+$/.test(last) && parts.length > 1) {
+                const possibleAmount = parseInt(last, 10);
+                const candidate = parts.slice(0, -1).join(' ').trim();
+                const retry = trySearch(candidate);
+                if (retry !== null && !(Array.isArray(retry))) {
+                    if (typeof from !== 'undefined') {
+                        const opt = bot.options.commands;
+                        if (opt[from].enable === false && opt[from].disableForSKU.includes(retry.sku)) {
+                            const custom = opt[from].customReply.disabledForSKU;
+                            bot.sendMessage(
+                                steamID,
+                                custom ? custom.replace(/%itemName%/g, retry.name) : `❌ ${from} command is disabled for ${retry.name}.`
+                            );
+                            return null;
+                        }
+                    }
+                    match = retry;
+                    name = candidate;
+                    amount = possibleAmount;
+                    priceKey = Pricelist.isAssetId(name) ? name : retry.sku;
+                }
+            }
+        }
+    }
+
+    // --- If still not found, run original fuzzy/unusual match logic (unchanged) ---
     if (match === null) {
         // Search the item by Levenshtein distance to find a close match (if one exists)
         let lowestDistance = 999;
@@ -89,8 +243,7 @@ export function getItemAndAmount(
             if (pricedItem.name === null) {
                 // This looks impossible, but can occur I guess.
                 // https://github.com/TF2Autobot/tf2autobot/issues/882
-
-                bot.sendMessage(steamID, `❌ Something went wrong. Please try again.`);
+                bot.sendMessage(steamID, `❌ Something went wrong. It's likely the bot failed to find the item name you wrote.`);
                 return null;
             }
 
@@ -103,9 +256,9 @@ export function getItemAndAmount(
                 // genericNameAndMatch detected that the hat did start with an unusual effect
                 // so we will check to see if a generic SKU is found
                 if (genericEffect.effect) {
-                    const itemDistance = levenshtein(pricedItem.name, genericEffect.name);
-                    if (itemDistance < lowestUnusualDistance) {
-                        lowestUnusualDistance = itemDistance;
+                    const itemDistance2 = levenshtein(pricedItem.name, genericEffect.name);
+                    if (itemDistance2 < lowestUnusualDistance) {
+                        lowestUnusualDistance = itemDistance2;
                         closestUnusualMatch = pricedItem;
                     }
                 }
@@ -133,7 +286,6 @@ export function getItemAndAmount(
 
         if (closestMatch === null) {
             bot.sendMessage(steamID, notFound(name, prefix));
-
             return null;
         }
 
@@ -171,10 +323,10 @@ export function getItemAndAmount(
             };
         } else {
             bot.sendMessage(steamID, notFound(name, prefix));
-
             return null;
         }
     } else if (Array.isArray(match)) {
+        // multiple match handling (unchanged)
         const matchCount = match.length;
 
         if (matchCount > 20) {
@@ -192,10 +344,48 @@ export function getItemAndAmount(
     }
 
     return {
-        amount: amount,
+        amount: amount || 1,
         priceKey: priceKey,
         match: match
     };
+}
+export function parseSkuAndAmountFromMessage(
+    message: string,
+    schema: Schema
+): { sku: string; amount: number } | null {
+    let text = removeLinkProtocol(message).trim();
+    let amount = 1;
+
+    const parts = text.split(/\s+/);
+
+    // Leading amount: "100 nc tod"
+    if (/^\d+$/.test(parts[0]) && parts.length > 1) {
+        amount = Math.max(1, parseInt(parts.shift(), 10));
+        text = parts.join(' ');
+    }
+
+    // Normalize shorthands early
+    text = text
+        .replace(/^(uncraftable|non[ -]?craftable|nc)\b/i, 'Non-Craftable')
+        .replace(/\btod\b/i, 'Tour of Duty Ticket')
+        .replace(/\bbill\b/i, 'Bill\'s Hat')
+        .replace(/\bmax\b/i, 'Max\'s Severed Head')
+        .replace(/\bkey\b/i, 'Mann Co. Supply Crate Key')
+        .trim();
+
+    // If already a SKU → trust it
+    if (testPriceKey(text)) {
+        return { sku: text, amount };
+    }
+
+    // Otherwise resolve name → sku using schema
+    const sku = schema.getSkuFromName(text);
+
+    if (!sku || sku.includes('null') || sku.includes('undefined')) {
+        return null;
+    }
+
+    return { sku, amount };
 }
 
 export function parseItemAndAmountFromMessage(message: string): { name: string; amount: number } {

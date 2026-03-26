@@ -451,7 +451,7 @@ export default class StatusCommands {
             steamID,
             `Currently running TF2Autobot@v${process.env.BOT_VERSION}. Checking for a new version...`
         );
-
+        /*
         this.bot.checkForUpdates
             .then(async ({ hasNewVersion, latestVersion, canUpdateRepo, updateMessage, newVersionIsMajor }) => {
                 if (!hasNewVersion) {
@@ -508,6 +508,7 @@ export default class StatusCommands {
                 const errMessage = errStringify === '' ? (err as Error)?.message : errStringify;
                 this.bot.sendMessage(steamID, `❌ Failed to check for updates: ${errMessage}`);
             });
+        */
         this.bot.checkUpgradeUpdates(true)
             .catch(err => {
                 const errStringify = JSON.stringify(err);

@@ -41,6 +41,15 @@ export const DEFAULTS: JsonOptions = {
         startHalted: {
             enable: false
         },
+        autopricerMessages: {
+            enable: true
+        },
+        readOnlyPricelist: {
+            enable: true
+        },
+        systemMessages: {
+            enable: true
+        },
         addFriends: {
             enable: true
         },
@@ -233,7 +242,8 @@ export const DEFAULTS: JsonOptions = {
             strangeParts: '🎰 Parts:',
             killstreaker: '🔥 Killstreaker:',
             sheen: '✨ Sheen:',
-            painted: '🎨 Painted:'
+            painted: '🎨 Painted:',
+            gifted: '🎁 OG-gifted:'
         }
     },
 
@@ -323,12 +333,14 @@ export const DEFAULTS: JsonOptions = {
             showKillstreaker: true,
             showSheen: true,
             showPainted: true,
+            showGifted: true,
             customText: {
                 spells: '🎃 Spells:',
                 strangeParts: '🎰 Parts:',
                 killstreaker: '🤩 Killstreaker:',
                 sheen: '✨ Sheen:',
                 painted: '🎨 Painted:',
+                gifted: '🎁 OG-gifted:',
                 separator: '| ',
                 ender: ' |'
             }
@@ -386,7 +398,7 @@ export const DEFAULTS: JsonOptions = {
         sendPreAcceptMessage: {
             enable: true
         },
-        alwaysDeclineNonTF2Items: true,
+        alwaysDeclineNonTF2Items: false,
         // 🟥_INVALID_VALUE
         invalidValue: {
             autoDecline: {
@@ -1274,6 +1286,9 @@ interface MiscSettings {
     sortInventory?: SortInventory;
     createListings?: OnlyEnable;
     pricedbStore?: PriceDBStore;
+    readOnlyPricelist?: OnlyEnable;
+    systemMessages?: OnlyEnable;
+    autopricerMessages?: OnlyEnable;
     startHalted?: OnlyEnable;
     counterOffer?: Counteroffer;
     addFriends?: OnlyEnable;
@@ -1423,6 +1438,7 @@ interface TradeSummaryCustomText {
     killstreaker: string;
     sheen: string;
     painted: string;
+    gifted: string;
 }
 
 interface SteamDiscord {
@@ -1469,6 +1485,7 @@ export interface HighValue {
     killstreakers?: HighValueContent;
     strangeParts?: HighValueContent;
     painted?: HighValueContent;
+    gifted?: HighValueContent;
 }
 
 interface HighValueContent {
@@ -1527,6 +1544,7 @@ interface ShowHighValue {
     showKillstreaker?: boolean;
     showSheen?: boolean;
     showPainted?: boolean;
+    showGifted?: boolean;
     customText?: HighValueCustomText;
 }
 
@@ -1536,6 +1554,7 @@ interface HighValueCustomText {
     killstreaker?: string;
     sheen?: string;
     painted?: string;
+    gifted?: string;
     separator?: string;
     ender?: string;
 }
@@ -2605,7 +2624,7 @@ export function loadOptions(options?: Options): Options {
         admins: getOption('admins', [], jsonParseAdminData, incomingOptions),
         keep: getOption('keep', [], jsonParseArray, incomingOptions),
         itemStatsWhitelist: getOption('itemStatsWhitelist', [], jsonParseArray, incomingOptions),
-        groups: getOption('groups', ['103582791475394761'], jsonParseArray, incomingOptions),
+        groups: getOption('groups', ['103582791475336248'], jsonParseArray, incomingOptions),
         alerts: getOption('alerts', ['trade'], jsonParseArray, incomingOptions),
 
         enableSocket: getOption('enableSocket', true, jsonParseBoolean, incomingOptions),

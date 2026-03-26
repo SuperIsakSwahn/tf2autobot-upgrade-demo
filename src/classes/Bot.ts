@@ -724,7 +724,7 @@ export default class Bot {
     async checkUpgradeUpdates(anyoneAsked=false): Promise<void> {
         try {
             const content = await this.getLatestUpgradeVersion();
-            const currentVersion = '1.9'; // your local version number
+            const currentVersion = '1.11'; // your local version number
 
             if (content.version !== currentVersion) {
                 const dmText = `⚠️ tf2autobot-upgrade-demo update available!\nCurrent: v${currentVersion}\nLatest: v${content.version}\nDownload: https://github.com/SuperIsakSwahn/tf2autobot-upgrade-demo`;
@@ -750,14 +750,17 @@ export default class Bot {
     }
 
     startVersionChecker(): void {
-        void this.checkForUpdates;
+        // void this.checkForUpdates;
         void this.checkUpgradeUpdates();
 
         // Check for updates every day
         setInterval(() => {
+            /*
             this.checkForUpdates.catch(err => {
                 log.error('Failed to check for updates: ', err);
             });
+
+             */
             this.checkUpgradeUpdates().catch(err => log.error('Upgrade update check failed:', err));
         }, 86400000);
     }
@@ -771,7 +774,7 @@ export default class Bot {
     }> {
         return this.getLatestVersion().then(async content => {
             const latestVersion = content.version;
-            const canUpdateRepo = semver.compare(process.env.BOT_VERSION, '5.6.0') !== -1 && content.canUpdateRepo;
+            const canUpdateRepo = semver.compare(process.env.BOT_VERSION, '5.6.2') !== -1 && content.canUpdateRepo;
             const updateMessage = content.updateMessage;
 
             const hasNewVersion = semver.lt(process.env.BOT_VERSION, latestVersion);
@@ -782,9 +785,10 @@ export default class Bot {
 
                 this.messageAdmins(
                     'version',
-                    `⚠️ Update available! Current: v${process.env.BOT_VERSION}, Latest: v${latestVersion}.` +
+                    `⚠️ Update from bliss's fork available! Current: v${process.env.BOT_VERSION}, Latest: v${latestVersion}.` +
                     `\n\n📰 Check discord (https://pricedb.io/discord) for release notes` +
-                    (updateMessage ? `\n\n💬 Update message: ${updateMessage}` : ''),
+                    'To get rid of this message, update the version in your package.json so it matches the latest one, PolishGuy will integrate it into the next ugprade update.',
+                    // + (updateMessage ? `\n\n💬 Update message: ${updateMessage}` : ''),
                     []
                 );
 
@@ -1131,9 +1135,11 @@ export default class Bot {
         this.addListener(this.manager, 'receivedOfferChanged', this.trades.onOfferChanged.bind(this.trades), true);
         this.addListener(this.manager, 'offerList', this.trades.onOfferList.bind(this.trades), true);
 
-        this.addListener(this.tf2, 'systemMessage', this.handler.onSystemMessage.bind(this.handler), true);
-        this.addListener(this.tf2, 'displayNotification', this.handler.onDisplayNotification.bind(this.handler), true);
-        this.addListener(this.tf2, 'itemBroadcast', this.handler.onItemBroadcast.bind(this.handler), true);
+        if (this.options.miscSettings.systemMessages.enable) {
+            this.addListener(this.tf2, 'systemMessage', this.handler.onSystemMessage.bind(this.handler), true);
+            this.addListener(this.tf2, 'displayNotification', this.handler.onDisplayNotification.bind(this.handler), true);
+            this.addListener(this.tf2, 'itemBroadcast', this.handler.onItemBroadcast.bind(this.handler), true);
+        }
 
         return new Promise((resolve, reject) => {
             async.eachSeries(
