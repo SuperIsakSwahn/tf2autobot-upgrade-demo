@@ -1,5 +1,5 @@
 tf2autobot-upgrade: 1.57
-tf2autobot-upgrade-demo: 1.10
+tf2autobot-upgrade-demo: 1.11
 
 Free version:
 
@@ -367,4 +367,3 @@ Added highValue filter to the findBySKU function
 De-duplicated code
 
 Made it so when you craft weapons the stats get saved automatically
-
