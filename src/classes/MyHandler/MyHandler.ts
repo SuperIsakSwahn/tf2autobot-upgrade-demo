@@ -1205,7 +1205,6 @@ export default class MyHandler extends Handler {
                     const match = this.bot.pricelist.getPrice({ priceKey: id });
                     if (which === 'their') {
                         const itemPrice = match[intentString].toValue(sellKeyPrice.metal)
-                        console.log('itemPrice: ', itemPrice)
 
                         if (itemPrice == 0) {
 
@@ -1224,8 +1223,6 @@ export default class MyHandler extends Handler {
                             else if (quality === 11) value += 18;
                             else if (quality === 13) value += 18;
                             else if (quality === 14) value += 20 * Currencies.toScrap(sellKeyPrice.metal);
-                            console.log('This is quality: ', quality)
-                            console.log("isFestivized is: ", isFestivized);
                             let isCosmetic = false;
                             const isKitOrFabricator = id.includes(';td-');
                                  if (id.includes(';kt-1') && !isKitOrFabricator) value += 90; // 10 ref fallback, quite low, adjustable by just changing this code
@@ -1360,8 +1357,6 @@ export default class MyHandler extends Handler {
                                 else if (quality === 13) value += 18;
                                 else if (quality === 14) value += 20 * Currencies.toScrap(sellKeyPrice.metal);
                                 else if (quality === 15) value += 1/2
-                                console.log('This is quality: ', quality)
-                                console.log("isFestivized is: ", isFestivized);
                                 let isCosmetic = false;
                                 const isKitOrFabricator = sku.includes(';td-');
                                 if (sku.includes(';kt-1') && !isKitOrFabricator) value += 54; // 6 ref fallback, quite low, adjustable by just changing this code

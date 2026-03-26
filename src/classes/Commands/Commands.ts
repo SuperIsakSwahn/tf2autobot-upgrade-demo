@@ -2214,7 +2214,6 @@ export default class Commands {
             return / key/i.test(name); // loosened match as you wanted
         });
 
-        console.log('Detected key SKUs:', keySkus);
 
         for (const sku of keySkus) {
             if (totalAdded >= amount) break;
@@ -2366,7 +2365,6 @@ export default class Commands {
             return / key$/i.test(name); // ends with " Key"
         });
 
-        console.log('Key SKUs detected:', keySkus);
 
         let added = 0;
 
@@ -2431,7 +2429,6 @@ export default class Commands {
         const inv = this.bot.inventoryManager.getInventory;
         const festiveSkus = Object.keys(inv.tradable || {}).filter(sku => sku.includes(';6;') && sku.includes('festive')
         );
-        console.log('Filtered festive SKUs:', festiveSkus);
 
         // 5. Add to cart
         let added = 0;
@@ -2722,7 +2719,6 @@ export default class Commands {
         const uncraftableVariants = ['uncraftable ', 'uncraft ', 'non craftable ', 'non-craftable ', 'noncraft ', 'nc '];
         const firstWord = parts[0].toLowerCase();
         if (uncraftableVariants.includes(firstWord + ' ')) {
-            console.log('uncraftableVariants.includes(firstWord is true');
             ncPrefix = 'Non-Craftable ';
             restParts.shift(); // remove the prefix from the rest of the item
         }
@@ -2732,8 +2728,6 @@ export default class Commands {
         let mainItem = restParts.join(' ').replace('Non-Craftable ', '');
 
         const lowerMain = mainItem.toLowerCase();
-        console.log('This is lowerMain: \'', lowerMain, '\'');
-        console.log('This is lowerMain test: \'', 'test', '\'');
         if (lowerMain === 'key' || lowerMain === 'keys') {
             mainItem = 'Mann Co. Supply Crate Key';
         } else if (lowerMain === 'bp' || lowerMain === 'expander') {

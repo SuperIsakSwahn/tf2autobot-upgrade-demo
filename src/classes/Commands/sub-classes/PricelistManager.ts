@@ -783,10 +783,7 @@ export default class PricelistManagerCommands {
             // Rebuild with "item=" added after the command
             message = `${command} item=${rest}`;
 
-            console.log('UPDATE This is message: ', message, 'prefix: ', prefix);
-            // Logs: "!u item=Taunt: The Dueling Banjo&sell.keys=2&sell.metal=15"
         }
-        console.log('This is message: ', message, 'prefix: ', prefix)
 
         const params = CommandParser.parseParams(CommandParser.removeCommand(removeLinkProtocol(message)));
 
