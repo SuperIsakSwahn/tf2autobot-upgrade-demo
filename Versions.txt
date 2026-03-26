@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.58
+tf2autobot-upgrade: 1.59
 tf2autobot-upgrade-demo: 1.13
 
 Free version:
@@ -375,3 +375,7 @@ Made it so when you craft weapons the stats get saved automatically
 Removed a lot of formerly important log messages I added
 
 Made the vaccinator command better at smelting metal
+
+1.59:
+
+Added a !cstats command for the crafted weapons stats
