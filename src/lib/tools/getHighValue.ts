@@ -51,12 +51,10 @@ export default function getHighValueItems(items: Items, bot: Bot): ItemsWithName
                     }else if (attachment === 'g') {
                         toString += `\n${cT.gifted ? cT.gifted : '🎁 OG-gifted:'} `;
                     }
-
                     for (const pSKU in items[sku][attachment]) {
                         if (!Object.prototype.hasOwnProperty.call(items[sku][attachment], pSKU)) {
                             continue;
                         }
-
                         toJoin.push(
                             `${getAttachmentName(attachment, pSKU, bot.schema.paints, bot.strangeParts)}${
                                 attachment === 'p' && normalizePaint ? ` (${sku.replace(/;p\d+/, '')};${pSKU})` : ''
@@ -73,7 +71,6 @@ export default function getHighValueItems(items: Items, bot: Bot): ItemsWithName
         const nameSku = Pricelist.isAssetId(sku) ? bot.pricelist.getPrice({ priceKey: sku }).sku : sku;
         itemsWithName[bot.schema.getName(SKU.fromString(nameSku.replace(/;p\d+/, '')))] = toString;
     }
-
     return itemsWithName;
 }
 
