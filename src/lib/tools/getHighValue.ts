@@ -48,6 +48,8 @@ export default function getHighValueItems(items: Items, bot: Bot): ItemsWithName
                         toString += `\n${cT.sheen ? cT.sheen : '✨ Sheen:'} `;
                     } else if (attachment === 'p') {
                         toString += `\n${cT.painted ? cT.painted : '🎨 Painted:'} `;
+                    }else if (attachment === 'g') {
+                        toString += `\n${cT.gifted ? cT.gifted : '🎁 OG-gifted:'} `;
                     }
 
                     for (const pSKU in items[sku][attachment]) {
@@ -75,4 +77,4 @@ export default function getHighValueItems(items: Items, bot: Bot): ItemsWithName
     return itemsWithName;
 }
 
-type Attachment = 's' | 'sp' | 'ke' | 'ks' | 'p';
+type Attachment = 's' | 'sp' | 'ke' | 'ks' | 'p' | 'g';
