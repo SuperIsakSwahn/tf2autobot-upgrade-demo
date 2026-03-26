@@ -547,12 +547,35 @@ export default class Inventory {
             if (
                 content.value.startsWith('Date Received:')
             ) {
-                const match = content.value.match(/\b(20\d{2})\b/);
+                const match = content.value.match(
+                    /Date Received:\s+\w+,\s+(\w+)\s+(\d{1,2}),\s+(20\d{2})/
+                );
 
                 if (match) {
-                    const year = parseInt(match[1], 10);
-                    if (year <= 2015) {
-                        g['og'] = true;
+                    const monthName = match[1]; // August
+                    const day = match[2].padStart(2, '0'); // 18
+                    const year = match[3]; // 2015
+
+                    const monthMap = {
+                        January: '01',
+                        February: '02',
+                        March: '03',
+                        April: '04',
+                        May: '05',
+                        June: '06',
+                        July: '07',
+                        August: '08',
+                        September: '09',
+                        October: '10',
+                        November: '11',
+                        December: '12'
+                    };
+
+                    const month = monthMap[monthName];
+
+                    if (parseInt(year) <= 2015 && month) {
+                        const date = `${year}-${month}-${day}`;
+                        g[date] = true;
                     }
                 }
             }
