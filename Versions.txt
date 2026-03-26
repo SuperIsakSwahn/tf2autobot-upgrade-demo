@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.59
+tf2autobot-upgrade: 1.60
 tf2autobot-upgrade-demo: 1.13
 
 Free version:
@@ -379,3 +379,8 @@ Made the vaccinator command better at smelting metal
 1.59:
 
 Added a !cstats command for the crafted weapons stats
+
+
+1.60:
+
+Reverted a tiny change Intellij made to an import statement that somehow nuked the ocntents of the options.json file
