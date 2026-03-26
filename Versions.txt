@@ -384,3 +384,8 @@ Added a !cstats command for the crafted weapons stats
 1.60:
 
 Reverted a tiny change Intellij made to an import statement that somehow nuked the contents of the options.json file
+
+1.61:
+
+Fixed !updatefile not updating files
+Added !chstats for crafted hats stats
