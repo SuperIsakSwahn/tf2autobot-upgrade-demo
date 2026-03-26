@@ -16,4 +16,5 @@ export default function getAttachmentName(
     else if (attachment === 'ke') return getKeyByValue(killstreakersData, pSKU);
     else if (attachment === 'ks') return getKeyByValue(sheensData, pSKU);
     else if (attachment === 'p') return getKeyByValue(paints, parseInt(pSKU.replace('p', '')));
+    else if (attachment === 'g') return new Date(pSKU).toLocaleDateString('en-GB');;
 }
