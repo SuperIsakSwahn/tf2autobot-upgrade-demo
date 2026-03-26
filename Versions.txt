@@ -1,5 +1,5 @@
 tf2autobot-upgrade: 1.57
-tf2autobot-upgrade-demo: 1.11
+tf2autobot-upgrade-demo: 1.12
 
 Free version:
 
@@ -59,6 +59,8 @@ Made existing code more efficient
 
 Fixed a bug where prices.tf was the default
 
+1.12:
+Fixed 🎁 OG-gifted: undefined 🌟
 
 Paid version:
 
