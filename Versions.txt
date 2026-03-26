@@ -53,6 +53,12 @@ Apparently I forgot to fill this in but I think it was a small update
 Added a autopricerMessages option, if disabled, the bot will never tell you about automatic price updates in the discord server.  
 Added an systemMessages option, if disabled, the bot will never send system messages in the discord server.  
 Added a readOnlyPricelist option, if enabled, the bot will never write to the pricelist file, it will only read it, load it into memory and make changes in there without writing them to the file, useful if multiple bots use one pricelist (one bot has the option disabled, all the other ones enable it)
+Added og-gifted weapons to high value list
+Fixed a bug where findBySKU doesn't filter by high value
+Made existing code more efficient
+
+Fixed a bug where prices.tf was the default
+
 
 Paid version:
 
@@ -361,3 +367,4 @@ Added highValue filter to the findBySKU function
 De-duplicated code
 
 Made it so when you craft weapons the stats get saved automatically
+
