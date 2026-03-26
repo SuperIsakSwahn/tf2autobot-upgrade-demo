@@ -373,3 +373,5 @@ De-duplicated code
 Made it so when you craft weapons the stats get saved automatically
 
 Removed a lot of formerly important log messages I added
+
+Made the vaccinator command better at smelting metal
