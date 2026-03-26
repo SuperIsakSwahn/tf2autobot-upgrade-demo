@@ -1,5 +1,5 @@
 tf2autobot-upgrade: 1.57
-tf2autobot-upgrade-demo: 1.12
+tf2autobot-upgrade-demo: 1.13
 
 Free version:
 
@@ -61,6 +61,8 @@ Fixed a bug where prices.tf was the default
 
 1.12:
 Fixed 🎁 OG-gifted: undefined 🌟
+1.13:
+Removed a lot of formerly important log messages I added
 
 Paid version:
 
@@ -369,3 +371,5 @@ Added highValue filter to the findBySKU function
 De-duplicated code
 
 Made it so when you craft weapons the stats get saved automatically
+
+Removed a lot of formerly important log messages I added
