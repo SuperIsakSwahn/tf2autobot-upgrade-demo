@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.60
+tf2autobot-upgrade: 1.61
 tf2autobot-upgrade-demo: 1.13
 
 Free version:
