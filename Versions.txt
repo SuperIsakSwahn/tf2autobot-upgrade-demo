@@ -389,3 +389,7 @@ Reverted a tiny change Intellij made to an import statement that somehow nuked t
 
 Fixed !updatefile not updating files
 Added !chstats for crafted hats stats
+
+1.62:
+
+Improved the polish operation 2 command (it loops until it can't craft more tokens)
