@@ -393,3 +393,5 @@ Added !chstats for crafted hats stats
 1.62:
 
 Improved the polish operation 2 command (it loops until it can't craft more tokens)
+
+Made the help command explain what polish operations do
