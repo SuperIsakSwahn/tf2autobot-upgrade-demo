@@ -397,3 +397,5 @@ Improved the polish operation 2 command (it loops until it can't craft more toke
 Made the help command explain what polish operations do
 
 Made it so Frostbite Fit properly returns the sku and not null;null
+
+Blacklisted panic attacks and reserve shooters in token crafting because they were crafting soldier tokens when the bot thought they were different tokens
