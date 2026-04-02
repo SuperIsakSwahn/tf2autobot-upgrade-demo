@@ -399,3 +399,5 @@ Made the help command explain what polish operations do
 Made it so Frostbite Fit properly returns the sku and not null;null
 
 Blacklisted panic attacks and reserve shooters in token crafting because they were crafting soldier tokens when the bot thought they were different tokens
+
+Added a !call command that warns you for items that don't appear in your autopricer's pricelist but you've set autoprice=true for them
