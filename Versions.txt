@@ -405,3 +405,5 @@ Blacklisted panic attacks and reserve shooters in token crafting because they we
 Added a !call command that warns you for items that don't appear in your autopricer's pricelist but you've set autoprice=true for them
 
 Made it so the globalDisable options work
+
+Fixed highValue errors
