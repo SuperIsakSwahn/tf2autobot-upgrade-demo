@@ -8,8 +8,8 @@ import { Currency } from '../types/TeamFortress2';
 
 export const DEFAULTS: JsonOptions = {
     globalDisable: {
-        messages: false,
-        greeting: false,
+        messages: true,
+        greeting: true,
         commands: false,
         adminCommands: false
     },

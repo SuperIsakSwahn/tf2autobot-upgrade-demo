@@ -2608,6 +2608,7 @@ export default class MyHandler extends Handler {
             });
     }
 
+
     private onNewFriend(steamID: SteamID, tries = 0): void {
         if (tries === 0) {
             log.debug(`Now friends with ${steamID.getSteamID64()}`);
@@ -2626,12 +2627,19 @@ export default class MyHandler extends Handler {
                 if (tries >= 5) {
                     log.info(`I am now friends with ${steamID.getSteamID64()}`);
 
+                    // Check if greeting is globally disabled
+                    if (this.bot.options.globalDisable?.greeting === true) {
+                        log.debug('Greeting disabled, not sending welcome message');
+                        return;
+                    }
+
                     return this.bot.sendMessage(
                         steamID,
                         this.opt.customMessage.welcome
                             ? this.opt.customMessage.welcome
-                                  .replace(/%name%/g, '')
-                                  .replace(/%admin%/g, isAdmin ? '!help' : '!how2trade')
+                                .replace(/%name%/g, '')
+                                .replace(/%admin%/g, isAdmin ? '!help' : '!how2trade')
+                                .replace(/%pricedb_store%/g, this.bot.getPricedbStoreUrl())
                             : `Hi! If you don't know how things work, please type "!${isAdmin ? 'help' : 'how2trade'}"`
                     );
                 }
@@ -2646,18 +2654,24 @@ export default class MyHandler extends Handler {
 
             log.info(`I am now friends with ${friend.player_name} (${steamID.getSteamID64()})`);
 
+            // Check if greeting is globally disabled
+            if (this.bot.options.globalDisable?.greeting === true) {
+                log.debug('Greeting disabled, not sending welcome message');
+                return;
+            }
+
             this.bot.sendMessage(
                 steamID,
                 this.opt.customMessage.welcome
                     ? this.opt.customMessage.welcome
-                          .replace(/%name%/g, friend.player_name)
-                          .replace(/%admin%/g, isAdmin ? '!help' : '!how2trade')
+                        .replace(/%name%/g, friend.player_name)
+                        .replace(/%admin%/g, isAdmin ? '!help' : '!how2trade')
+                        .replace(/%pricedb_store%/g, this.bot.getPricedbStoreUrl())
                     : `Hi ${friend.player_name}! If you don't know how things work, please type ` +
-                          `"!${isAdmin ? 'help' : 'how2trade'}"`
+                    `"!${isAdmin ? 'help' : 'how2trade'}"`
             );
         });
     }
-
     private checkFriendsCount(steamIDToIgnore?: SteamID | string): void {
         log.debug('Checking friends count');
         const friends = this.bot.friends.getFriends;
