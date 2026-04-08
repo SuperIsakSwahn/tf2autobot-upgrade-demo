@@ -407,3 +407,4 @@ Added a !call command that warns you for items that don't appear in your autopri
 Made it so the globalDisable options work
 
 Fixed highValue errors
+Fixed autoDeclineLazyOffer
