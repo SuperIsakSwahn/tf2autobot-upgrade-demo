@@ -408,3 +408,6 @@ Made it so the globalDisable options work
 
 Fixed highValue errors
 Fixed autoDeclineLazyOffer
+
+
+Made globalDisable.messages apply to admins
