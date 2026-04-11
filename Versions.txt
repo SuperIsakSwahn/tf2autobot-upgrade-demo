@@ -412,4 +412,4 @@ Fixed autoDeclineLazyOffer
 
 Made globalDisable.messages apply to admins
 
-Added a miscSettings.autoAddAdmins option
+Added a miscSettings.autoAddAdmins option (default is true)
