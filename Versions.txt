@@ -414,3 +414,5 @@ Made globalDisable.messages apply to admins
 
 Added a miscSettings.autoAddAdmins option (default is true)
 Added a killstreakerEffects option, if you set it to false the bot won't disable items because of their sheen and killstreaker
+
+Fixed a fatal error
