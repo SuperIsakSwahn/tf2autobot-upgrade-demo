@@ -416,3 +416,5 @@ Added a miscSettings.autoAddAdmins option (default is true)
 Added a killstreakerEffects option, if you set it to false the bot won't disable items because of their sheen and killstreaker
 
 Fixed a fatal error
+
+Made an option to get pinged on discord when your bot is low on pure
