@@ -418,3 +418,5 @@ Added a killstreakerEffects option, if you set it to false the bot won't disable
 Fixed a fatal error
 
 Made an option to get pinged on discord when your bot is low on pure
+
+Fixed command bug that tried to use the command itself as the searching parameter
