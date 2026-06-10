@@ -420,3 +420,5 @@ Fixed a fatal error
 Made an option to get pinged on discord when your bot is low on pure
 
 Fixed command bug that tried to use the command itself as the searching parameter
+
+Fixed a fatal error TypeError: Cannot read properties of null (reading 'getSteamID64')
