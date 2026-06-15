@@ -422,3 +422,5 @@ Made an option to get pinged on discord when your bot is low on pure
 Fixed command bug that tried to use the command itself as the searching parameter
 
 Fixed a fatal error TypeError: Cannot read properties of null (reading 'getSteamID64')
+
+Fixed and added !bcart all (adds every item the bot is buying to the cart), same with scart and the !buy/!sell commands
