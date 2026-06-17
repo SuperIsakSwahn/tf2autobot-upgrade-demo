@@ -424,3 +424,6 @@ Fixed command bug that tried to use the command itself as the searching paramete
 Fixed a fatal error TypeError: Cannot read properties of null (reading 'getSteamID64')
 
 Fixed and added !bcart all (adds every item the bot is buying to the cart), same with scart and the !buy/!sell commands
+
+
+Fixed it so the pricedb store uses crit.f
