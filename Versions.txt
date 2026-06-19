@@ -426,4 +426,9 @@ Fixed a fatal error TypeError: Cannot read properties of null (reading 'getSteam
 Fixed and added !bcart all (adds every item the bot is buying to the cart), same with scart and the !buy/!sell commands
 
 
-Fixed it so the pricedb store uses crit.f
+Fixed it so the pricedb store uses crit.tf
+
+1.63:
+
+Added a !invvalues command, tells you the value of your inventory (uses the sell price for every priced item and tells you which ones it failed to calculate)
+You can manually edit the values in inventoryValues.txt, it's structured with Total value: (how many keys and ref it's worth) and below that are lines structured like this: <steamAccountName>: <totalValueInScraps>, you can manually change it or add lines, like you can just make a line called Skinport: 1000000 if your skinport account is worth 1 million scrap for example
