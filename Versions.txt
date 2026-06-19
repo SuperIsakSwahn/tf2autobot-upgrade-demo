@@ -432,3 +432,15 @@ Fixed it so the pricedb store uses crit.tf
 
 Added a !invvalues command, tells you the value of your inventory (uses the sell price for every priced item and tells you which ones it failed to calculate)
 You can manually edit the values in inventoryValues.txt, it's structured with Total value: (how many keys and ref it's worth) and below that are lines structured like this: <steamAccountName>: <totalValueInScraps>, you can manually change it or add lines, like you can just make a line called Skinport: 1000000 if your skinport account is worth 1 million scrap for example
+
+Fixed a bug where imprecise calculations resulted in problems like:
+
+Summary (offer)
+• Asked: 30 keys〚The Snow Scoper (0 → -1/1)〛
+• Offered: 30 keys〚Mann Co. Supply Crate Key x30 (0 → 30/1)〛
+──────────────────────
+
+The offer has been automatically declined.
+
+Error: Couldn't counter an offer - value mismatch:
+{"value":0,"needToTakeWeapon":false,"ourTradesValue":{"scrap":0,"keys":30},"ourItems":{"30310;6":1},"theirTradesValue":{"scrap":-6,"keys":30},"theirItems":{"5021;6":30}}
