@@ -444,3 +444,4 @@ The offer has been automatically declined.
 
 Error: Couldn't counter an offer - value mismatch:
 {"value":0,"needToTakeWeapon":false,"ourTradesValue":{"scrap":0,"keys":30},"ourItems":{"30310;6":1},"theirTradesValue":{"scrap":-6,"keys":30},"theirItems":{"5021;6":30}}
+Fixed a bug where trade offers containing keys result in infinite retrying loops if keys are not enabled
