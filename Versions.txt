@@ -449,3 +449,5 @@ Fixed a bug where trade offers containing keys result in infinite retrying loops
 made it so the !block command also removes them from your friend list
 Added !addfriend command
 Added !removefriend command
+
+Updated the deposit and withdraw commands so you can deposit/withdraw multiple items at once by writing them on a new line
