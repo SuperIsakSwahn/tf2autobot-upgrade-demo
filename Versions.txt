@@ -451,3 +451,4 @@ Added !addfriend command
 Added !removefriend command
 
 Updated the deposit and withdraw commands so you can deposit/withdraw multiple items at once by writing them on a new line
+Optimized code and added a bots.txt file, if miscSettings.giveBotsModeratorRights is true, steam ids in this file will be able to take items from your inventory like admins (You'll need to add steam ids yourself, the idea behind this is to add bots like the ones from mannco.store here, I have the full file for them if you want it)
