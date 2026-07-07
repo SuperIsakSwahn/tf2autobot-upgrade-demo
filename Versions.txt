@@ -458,3 +458,4 @@ You can withdraw/deposit nuw/nuwnc (the non-craftable version) which takes every
 
 Added updateInvValues and informOfUnpricedItems to options.json, if updateInvValues and informOfUnpricedItems are set to true the bot will DM you over items it has that aren't listed, enabling updateInvValues will make it automatically run the !invvalues command every day
 Might change it so both updateInvValues and informOfUnpricedItems doesn't need to be on because I already made the !missingitems command
+Fixed whighvalue and wnonhighvalue, they were just withdrawing items based on if their pricelist group is highValue or not but now it takes every item that has high value attachments
