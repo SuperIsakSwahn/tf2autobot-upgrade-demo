@@ -460,3 +460,4 @@ Added updateInvValues and informOfUnpricedItems to options.json, if updateInvVal
 Might change it so both updateInvValues and informOfUnpricedItems doesn't need to be on because I already made the !missingitems command
 Fixed whighvalue and wnonhighvalue, they were just withdrawing items based on if their pricelist group is highValue or not but now it takes every item that has high value attachments
 Fixed asset ids working weird
+Fixed the bug where !w id=17213215319 works fine but !w 17213215319 throws a fatal error
