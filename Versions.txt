@@ -465,3 +465,4 @@ Fixed the bug where !w id=17213215319 works fine but !w 17213215319 throws a fat
 More asset id bug fixes, and now you always use "id" as the identifier when using an id, it used to be assetid when you want to use something and id when you want to do something with the pricelist
 Updated invvalues so it automatically gets the usd value of keys and also converts usd to sek (can be disabled in miscSettings.updateKeyRate.enable)
 Updated invvalues so instead of scraps you can use the $ prefix if you wanna write it in dollars or kr suffix if you wanna write it in crowns
+Merged more 429 fixes and mannco.store API stuff from tf2autobot-pricedb
