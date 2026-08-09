@@ -468,3 +468,5 @@ Updated invvalues so instead of scraps you can use the $ prefix if you wanna wri
 Merged more 429 fixes and mannco.store API stuff from tf2autobot-pricedb
 
 Fixed hanging invalid offers
+
+Updated deleteUntradableJunk to only remove untradable items that aren't keys, tickets, expanders, or smissmass stockings
