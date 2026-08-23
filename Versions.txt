@@ -472,3 +472,6 @@ Fixed hanging invalid offers
 Updated deleteUntradableJunk to only remove untradable items that aren't keys, tickets, expanders, winter noise makers, name tags, decal tools, description tags or smissmass stockings
 
 Reverted sets to arrays
+
+
+Added a new option: miscSettings.autoRestart decides whetever or not the bot should autorestart every 24 hours. I've noticed that my bots sometimes just stop responding to trades completely and restarting fixes it, enable this if you're having that problem.
