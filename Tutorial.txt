@@ -29,3 +29,10 @@ Used fallback pricer for Non-Craftable Vaccinator (998;6;uncraftable) - Please a
 Then you're using a custom pricer, but that pricer doesn't have the item you specified so it fell back to pricedb, and that fallback will most likely not emit price changes so the bot will be stuck on that price until your custom pricer has it, so I highly recommend adding it there
 
 If you need help with something related to this upgrade feel free to ask in the discord https://discord.gg/8TvUNk3Brb
+
+The deleteUntradableJunk function is different, it doesn't delete seasonal items, now it deletes any untradable item that is not a smissmass stocking (though be careful anyways if you expect to get one, i haven't tested a specific code for that yet), or backpack expander, or key, or tour of duty ticket or decal tool or name tag or description tag or winter noise maker
+
+miscSettings.autoRestart decides whetever or not the bot should autorestart every 24 hours. I've noticed that my bots sometimes just stop responding to trades completely and restarting fixes it, enable this if you're having that problem.
+
+!po crafts tokens and smelts useless weapons into metal then sends them along with quick-fixes, vaccinators and rocket jumpers to you
+!po2 crafts tokens, then crafts weapons, crafts tokens from the scrapweapons it just crafted and repeats until it can't craft more and the weapons it crafts are based on my recommendations, scout/pyro/heavy+melee, spy+pda2 and sniper+pda2
