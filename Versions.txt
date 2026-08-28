@@ -477,3 +477,5 @@ Reverted sets to arrays
 Added a new option: miscSettings.autoRestart decides whetever or not the bot should autorestart every 24 hours. I've noticed that my bots sometimes just stop responding to trades completely and restarting fixes it, enable this if you're having that problem.
 
 Before, there was just !avatar and !name, now there's more profile editors: !realName, !summary, !country, !state, !city, !customURL, !featuredBadge, !primaryGroup.
+
+Fixed the 'all' parameter for buy/sell commands
