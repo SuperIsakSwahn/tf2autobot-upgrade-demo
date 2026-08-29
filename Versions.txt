@@ -479,3 +479,16 @@ Added a new option: miscSettings.autoRestart decides whetever or not the bot sho
 Before, there was just !avatar and !name, now there's more profile editors: !realName, !summary, !country, !state, !city, !customURL, !featuredBadge, !primaryGroup.
 
 Fixed the 'all' parameter for buy/sell commands
+
+Fixed a bug where the !cart command ended up saying something like:
+🛒== YOUR CART ==🛒 (prices are approximate, the bot might charge less/pay more than what's displayed here)
+
+My side (items you will receive):
+Total amount of items we're giving: 0
+0.11 ref
+
+Your side (items you will lose):
+undefinedx Sticky Jumper (NaN ref)
+Total amount of items you're giving: NaN
+
+Type !checkout to checkout and proceed trade, or !clearcart to cancel.
