@@ -492,3 +492,10 @@ undefinedx Sticky Jumper (NaN ref)
 Total amount of items you're giving: NaN
 
 Type !checkout to checkout and proceed trade, or !clearcart to cancel.
+
+Fixed this bug:
+!scart sticky jumper
+PolishGuyXVII
+APP
+ — 2:21 PM
+has been added to your cart. Type "!cart" to view your cart summary or "!checkout" to checkout. 🛒
