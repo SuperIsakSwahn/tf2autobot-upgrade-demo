@@ -501,3 +501,5 @@ APP
 has been added to your cart. Type "!cart" to view your cart summary or "!checkout" to checkout. 🛒
 
 My bot was crashing unexpectedly so I swapped out the buggy function with whatever bliss is using in onTradeOfferChanged
+
+You can now deposit/withdraw unusuals by just writing !d|w <amount> unusuals
