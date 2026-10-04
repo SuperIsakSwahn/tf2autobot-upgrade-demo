@@ -505,3 +505,6 @@ My bot was crashing unexpectedly so I swapped out the buggy function with whatev
 You can now deposit/withdraw unusuals by just writing !d|w <amount> unusuals
 
 Made the !listings command say (FULL) whenn all listing slots are used
+
+
+Cleaned up the bugs I missed in the "src 0.33333 slash 0.5 keys per ticket and expander" folder and improved some of the code's handling of arrays and sets
