@@ -1,4 +1,4 @@
-tf2autobot-upgrade: 1.62
+tf2autobot-upgrade: 1.63
 tf2autobot-upgrade-demo: 1.14
 
 Free version:
@@ -508,3 +508,10 @@ Made the !listings command say (FULL) whenn all listing slots are used
 
 
 Cleaned up the bugs I missed in the "src 0.33333 slash 0.5 keys per ticket and expander" folder and improved some of the code's handling of arrays and sets
+
+Forgot to update the number to 1.63 here, will now
+
+1.64:
+
+Cleaned up more code inefficiencies
+Added Haunted Hoard Case #153 to the list of cases
