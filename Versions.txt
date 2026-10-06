@@ -513,5 +513,5 @@ Forgot to update the number to 1.63 here, will now
 
 1.64:
 
-Cleaned up more code inefficiencies
+Cleaned up more code inefficiencies (over 107 occurences of unnecessary Sets)
 Added Haunted Hoard Case #153 to the list of cases
