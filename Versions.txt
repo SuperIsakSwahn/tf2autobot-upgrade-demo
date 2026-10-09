@@ -517,3 +517,5 @@ Cleaned up more code inefficiencies (over 107 occurences of unnecessary Sets)
 Added Haunted Hoard Case #153 to the list of cases
 
 Updated the !sku command to work with asset ids
+
+1.65 Fixed bugs that made the bots unable to send offers
