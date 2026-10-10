@@ -518,4 +518,8 @@ Added Haunted Hoard Case #153 to the list of cases
 
 Updated the !sku command to work with asset ids
 
-1.65 Fixed bugs that made the bots unable to send offers
+1.65:
+
+Fixed bugs that made the bots unable to send offers
+
+Updated the !config command so that if you don't specify a change, it says the current option's value instead
