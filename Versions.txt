@@ -525,3 +525,7 @@ Fixed bugs that made the bots unable to send offers
 Updated the !config command so that if you don't specify a change, it says the current option's value instead
 
 fixed a fatal error "TypeError: Cannot read properties of null (reading 'length')" at classes/DiscordWebhook/sendTradeSummary's clamp function
+
+1.66:
+
+Removed a condition that was preventing crafting as expected
