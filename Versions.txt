@@ -531,3 +531,7 @@ fixed a fatal error "TypeError: Cannot read properties of null (reading 'length'
 Removed a condition that was preventing crafting as expected
 
 Disabled PriceDB or crit.tf
+
+1.67:
+
+Commented out code that was messing with the keys, like auto-updating my bots to buy them when I don't want them to
