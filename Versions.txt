@@ -535,3 +535,7 @@ Disabled PriceDB or crit.tf
 1.67:
 
 Commented out code that was messing with the keys, like auto-updating my bots to buy them when I don't want them to
+
+1.68
+
+Fixed inventoryValues not working with priced asset ids
