@@ -539,3 +539,5 @@ Commented out code that was messing with the keys, like auto-updating my bots to
 1.68
 
 Fixed inventoryValues not working with priced asset ids
+
+Fixed a fatal error if you use the update bulk command with an unpriced asset id
