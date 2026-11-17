@@ -541,3 +541,5 @@ Commented out code that was messing with the keys, like auto-updating my bots to
 Fixed inventoryValues not working with priced asset ids
 
 Fixed a fatal error if you use the update bulk command with an unpriced asset id
+
+Fixed inventoryValues always valuing unpriced scrapweapons at 1/2 scrap, so that now it only does that based on the weaponsAsCurrency settings
