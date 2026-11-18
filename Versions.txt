@@ -543,3 +543,5 @@ Fixed inventoryValues not working with priced asset ids
 Fixed a fatal error if you use the update bulk command with an unpriced asset id
 
 Fixed inventoryValues always valuing unpriced scrapweapons at 1/2 scrap, so that now it only does that based on the weaponsAsCurrency settings
+
+Fixed trade summaries using the asset id instead of the sku to build the pricedb link after an asset id trade
